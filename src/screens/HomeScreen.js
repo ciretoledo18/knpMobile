@@ -1,37 +1,90 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Linking} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5'; // Adjust the import based on your icon library
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { fetchProducts, fetchRewards } from '../utils/api';
 
 const HomeScreen = () => {
-    const openLink = (url) => {
-        Linking.openURL(url).catch((err) => console.error('Error opening URL:', err));
+    const [rewardsData, setRewardsData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const allRewards = await fetchRewards();
+                const allProducts = await fetchProducts();
+
+                const featuredProducts = allProducts.filter((product) => product.is_featured === 1);
+                setProducts(featuredProducts); // Set featured products
+                setRewardsData(allRewards);
+            } catch (error) {
+                console.error('Error fetching data:', error.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
+
+    const formatDate = (dateString) => {
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+        return formattedDate;
     };
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>drink another cup, stay for good food, connect with people
-            </Text>
+            {/* Rewards and Featured Products Section */}
+            {isLoading ? (
+                <Text>Loading data...</Text>
+            ) : (
+                <View style={styles.contentContainer}>
+                    {/* Rewards Section */}
+                    <Text style={styles.rewardsTitle}>Current Promotion/s</Text>
+                    <ScrollView style={styles.rewardsContainer}>
+                        {rewardsData && rewardsData.length > 0 ? (
+                            rewardsData.map((reward, index) => (
+                                <View key={index} style={styles.rewardItem}>
+                                    <Image
+                                        style={styles.rewardImage}
+                                        source={require('../assets/icon.png')}
+                                    />
+                                    <View style={styles.rewardTextContainer}>
+                                        <Text style={styles.rewardName}>{reward.name}</Text>
+                                        <Text>{reward.description}</Text>
+                                        <Text>
+                                            Valid thru {formatDate(reward.start_date)} - {formatDate(reward.end_date)}
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))
+                        ) : (
+                            <Text>No rewards available.</Text>
+                        )}
+                    </ScrollView>
 
-            <View style={styles.iconContainer}>
-                {/* Website */}
-                <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.kapenapud.com')}>
-                    <Icon name="globe" size={30} color="#E15D44" />
-                </TouchableOpacity>
+                    {/* Featured Products Section */}
+                    <Text style={styles.featuredProductsTitle}>Featured Products</Text>
 
-                {/* Facebook */}
-                <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.facebook.com/kapenapud')}>
-                    <Icon name="facebook" size={30} color="#1877F2" />
-                </TouchableOpacity>
-
-                {/* TikTok */}
-                <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.tiktok.com/@kapenapud')}>
-                    <Icon name="tiktok" size={30} color="#69C9D0" />
-                </TouchableOpacity>
-
-                {/* Instagram */}
-                <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.instagram.com/kapenapud')}>
-                    <Icon name="instagram" size={30} color="#E4405F" />
-                </TouchableOpacity>
-            </View>
+                    <ScrollView style={styles.featuredProductsContainer}>
+                        {products.map((product, index) => (
+                            <View key={index} style={styles.cardContainer}>
+                                <Image
+                                    style={styles.cardImage}
+                                    source={{ uri: `http://kapenapud.com/storage/${product.image}` }}
+                                />
+                                <View style={styles.cardTextContainer}>
+                                    <Text style={styles.cardName}>{product.name}</Text>
+                                    <Text style={styles.cardDescription}>{product.description}</Text>
+                                    {/* Add more product details as needed */}
+                                </View>
+                            </View>
+                        ))}
+                    </ScrollView>
+                </View>
+            )}
         </View>
     );
 };
@@ -41,25 +94,73 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff', // Adjust to your background color
+        backgroundColor: '#ABC4AA', // Adjust to your background color
     },
-    title: {
+    contentContainer: {
+        width: '90%',
+
+    },
+    rewardsContainer: {
+        marginBottom: 20,
+
+    },
+    rewardsTitle: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        textAlign: "center",
-        padding: 20
     },
-    iconContainer: {
+    rewardItem: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        width: '80%', // Adjust as needed
-    },
-    iconButton: {
-        backgroundColor: '#F2F2F2', // Adjust to your button color
-        padding: 10,
-        borderRadius: 50,
         alignItems: 'center',
+        marginBottom: 20,
+        backgroundColor: '#F2F2F2',
+        borderRadius: 10,
+        padding: 10,
+        width: '100%',
+    },
+    rewardImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        marginRight: 15,
+    },
+    rewardTextContainer: {
+        flex: 1,
+    },
+    rewardName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    featuredProductsContainer: {},
+    featuredProductsTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    cardContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 10,
+        padding: 10,
+        width: '100%',
+    },
+    cardImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 5,
+        marginRight: 15,
+    },
+    cardTextContainer: {
+        flex: 1,
+    },
+    cardName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    cardDescription: {
+        color: '#666666',
     },
 });
 

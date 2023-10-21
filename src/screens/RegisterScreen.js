@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
-import {View, Text, Image, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import axios from 'axios';
 
-const RegisterScreen = ({navigation}) => {
+const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPopup, setShowPopup] = useState(false);
 
     const handleRegister = async () => {
         try {
@@ -16,8 +17,11 @@ const RegisterScreen = ({navigation}) => {
                 password,
             });
 
-            // Assuming the registration was successful, navigate to the login screen
-            navigation.replace('Login');
+            // Assuming the registration was successful
+            if (response.status === 200) {
+                // Display the popup
+                setShowPopup(true);
+            }
         } catch (error) {
             console.error('Registration failed:', error.message);
             // Handle registration error (display an error message, etc.)
@@ -32,8 +36,26 @@ const RegisterScreen = ({navigation}) => {
     return (
         <View style={styles.bgContainer}>
             <View style={styles.centeredView}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={showPopup}
+                    onRequestClose={() => {
+                        setShowPopup(false);
+                    }}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>Welcome! Registration successful.</Text>
+                            <TouchableOpacity style={styles.popupButton} onPress={() => setShowPopup(false)}>
+                                <Text style={styles.popupButtonText}>OK</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+
                 <TouchableOpacity style={styles.logoContainer}>
-                    <Image style={styles.logo} source={require('../assets/icon.png')}/>
+                    <Image style={styles.logo} source={require('../assets/icon.png')} />
                     <Text style={styles.logoText}>kape na pud</Text>
                 </TouchableOpacity>
                 <View style={styles.formContainer}>
@@ -66,9 +88,8 @@ const RegisterScreen = ({navigation}) => {
                                 onChangeText={setPassword}
                             />
                         </View>
-                        <TouchableOpacity style={styles.createAccountButton}>
-                            <Text style={styles.createAccountButtonText} onPress={handleRegister}>Create an
-                                account</Text>
+                        <TouchableOpacity style={styles.createAccountButton} onPress={handleRegister}>
+                            <Text style={styles.createAccountButtonText}>Create an account</Text>
                         </TouchableOpacity>
                         <Text style={styles.signInText}>
                             Already have an account?{' '}
@@ -85,10 +106,6 @@ const styles = StyleSheet.create({
     bgContainer: {
         flex: 1,
         backgroundColor: '#ABC4AA',
-    },
-    container: {
-        flex: 1,
-        backgroundColor: '#f8f8f8',
     },
     centeredView: {
         flex: 1,
@@ -116,7 +133,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: {width: 0, height: 2},
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         elevation: 2,
     },
@@ -145,24 +162,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
     },
-    checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 16,
-    },
-    checkboxLabelContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    checkboxText: {
-        marginLeft: 8,
-        fontSize: 14,
-        color: '#666',
-    },
-    termsLink: {
-        color: '#007bff',
-        fontWeight: 'bold',
-    },
     createAccountButton: {
         backgroundColor: '#A9907E',
         borderRadius: 8,
@@ -182,6 +181,31 @@ const styles = StyleSheet.create({
     },
     signInLink: {
         color: '#007bff',
+        fontWeight: 'bold',
+    },
+    // Styles for the popup
+    modalView: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 20,
+        alignItems: 'center',
+        elevation: 5,
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    popupButton: {
+        backgroundColor: '#ABC4AA',
+        borderRadius: 8,
+        paddingVertical: 10,
+        alignItems: 'center',
+        width: 100,
+    },
+    popupButtonText: {
+        color: '#fff',
+        fontSize: 16,
         fontWeight: 'bold',
     },
 });

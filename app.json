@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "KNP",
-    "slug": "KNP",
+    "slug": "kape-na-pud",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ba20ea2a-edfa-41f4-94b7-7b8dd60e8694"
+      }
+    },
+    "owner": "ciretoledo18"
   }
 }

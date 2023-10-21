@@ -1,4 +1,3 @@
-// EditProfileScreen.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -26,35 +25,35 @@ const EditProfileScreen = () => {
                     style={styles.input}
                     placeholder="First Name"
                     value={firstName}
-                    onChangeText={text => setFirstName(text)}
+                    onChangeText={(text) => setFirstName(text)}
                 />
 
                 <TextInput
                     style={styles.input}
                     placeholder="Last Name"
                     value={lastName}
-                    onChangeText={text => setLastName(text)}
+                    onChangeText={(text) => setLastName(text)}
                 />
 
                 <TextInput
                     style={styles.input}
                     placeholder="Contact"
                     value={contact}
-                    onChangeText={text => setContact(text)}
+                    onChangeText={(text) => setContact(text)}
                 />
 
                 <TextInput
                     style={styles.input}
                     placeholder="Gender"
                     value={gender}
-                    onChangeText={text => setGender(text)}
+                    onChangeText={(text) => setGender(text)}
                 />
 
                 <TextInput
                     style={styles.input}
                     placeholder="Birthday"
                     value={birthday}
-                    onChangeText={text => setBirthday(text)}
+                    onChangeText={(text) => setBirthday(text)}
                 />
 
                 {/* Save Button */}
@@ -63,7 +62,10 @@ const EditProfileScreen = () => {
                 </TouchableOpacity>
 
                 {/* Back Button */}
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
             </View>
@@ -74,25 +76,30 @@ const EditProfileScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5', // Set your desired background color
         justifyContent: 'center',
         alignItems: 'center',
     },
     formContainer: {
         width: '80%',
         padding: 20,
+        backgroundColor: '#FFFFFF', // Set form background color
+        borderRadius: 10,
+        elevation: 3,
     },
     headerText: {
         fontSize: 24,
         marginBottom: 20,
         fontWeight: 'bold',
+        color: '#675D50', // Set header text color
     },
     input: {
         height: 40,
-        borderColor: 'gray',
+        borderColor: '#D3D3D3', // Set input border color
         borderWidth: 1,
         marginBottom: 20,
         padding: 10,
+        borderRadius: 5,
     },
     saveButton: {
         backgroundColor: '#A9907E',

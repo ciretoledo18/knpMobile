@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Linking} from 'react-native';
 import { fetchCustomers, fetchUsers } from "../utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import defaultAvatar from '../assets/avatar.gif';
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 const ProfileScreen = ({ navigation }) => {
     const [userData, setUserData] = useState(null);
     const [customerData, setCustomerData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const openLink = (url) => {
+        Linking.openURL(url).catch((err) => console.error('Error opening URL:', err));
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,14 +39,15 @@ const ProfileScreen = ({ navigation }) => {
     }, []);
 
     const handleSignOut = () => {
-        // Implement your sign-out logic here
-        // For now, let's navigate back to the login screen
         navigation.replace('Login');
     };
 
     const handleEditProfile = () => {
-        // Navigate to EditProfileScreen
         navigation.navigate('EditProfile');
+    };
+
+    const handleAddUserInfo = () => {
+        navigation.navigate('AddUserInfo');
     };
 
     return (
@@ -55,28 +62,75 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
             ) : (
                 <View style={styles.profileContainer}>
-                    <View style={styles.cover} />
-                    <View style={styles.contentContainer}>
-                        <Image style={styles.avatar} source={{ uri: `https://kapenapud.com/storage/${customerData.avatar}` }} />
-                        <Text style={styles.userName}>{userData.name}</Text>
-                        <Text style={styles.userInfo}>User ID: {userData.id}</Text>
-                        <Text style={styles.userInfo}>Email: {userData.email}</Text>
-                        <Text style={styles.userInfo}>Name: {customerData.first_name} {customerData.last_name}</Text>
-                        <Text style={styles.userInfo}>Gender: {customerData.gender}</Text>
-                        <Text style={styles.userInfo}>Birthday: {customerData.birthday}</Text>
-                        <Text style={styles.userInfo}>Contact: {customerData.contact_no}</Text>
-                        <Text style={styles.userInfo}>Rewards: {customerData.rewards}</Text>
+                    <View style={styles.cover}>
+                        <Text style={styles.socialText}>Visit our socials!</Text>
+                        {/* Icons Section */}
+                        <View style={styles.iconsContainer}>
+                            {/* Website */}
+                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.kapenapud.com')}>
+                                <Icon name="globe" size={30} color="#E15D44" />
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
+                            {/* Facebook */}
+                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.facebook.com/kapenapud')}>
+                                <Icon name="facebook" size={30} color="#1877F2" />
+                            </TouchableOpacity>
+
+                            {/* TikTok */}
+                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.tiktok.com/@kapenapud')}>
+                                <Icon name="tiktok" size={30} color="#69C9D0" />
+                            </TouchableOpacity>
+
+                            {/* Instagram */}
+                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.instagram.com/kapenapud')}>
+                                <Icon name="instagram" size={30} color="#E4405F" />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={styles.contentContainer}>
+                        {customerData ? (
+                            <>
+                                <Image
+                                    style={styles.avatar}
+                                    source={
+                                        customerData.avatar
+                                            ? { uri: `https://kapenapud.com/storage/${customerData.avatar}` }
+                                            : defaultAvatar
+                                    }
+                                />
+                                <Text style={styles.userName}>{userData.name}</Text>
+                                <Text style={styles.userInfo}>{userData.email}</Text>
+                                <Text style={styles.userInfo}>{customerData.first_name} {customerData.last_name}</Text>
+                                <Text style={styles.userInfo}>{customerData.gender}</Text>
+                                <Text style={styles.userInfo}>{customerData.birthday}</Text>
+                                <Text style={styles.userInfo}>{customerData.contact_no}</Text>
+                                <Text style={styles.userInfo}>Rewards: {customerData.rewards}</Text>
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.userInfo}>
+                                    Update your profile.
+                                </Text>
+                            </>
+                        )}
+
+                        <TouchableOpacity
+                            style={styles.editProfileButton}
+                            onPress={handleEditProfile}
+                        >
                             <Text style={styles.buttonText}>Edit Profile</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+                        <TouchableOpacity
+                            style={styles.logoutButton}
+                            onPress={handleSignOut}
+                        >
                             <Text style={styles.buttonText}>Sign Out</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             )}
+
         </SafeAreaView>
     );
 };
@@ -107,6 +161,9 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 150,
         backgroundColor: '#ABC4AA',
+        justifyContent: 'center',
+        alignItems: 'center',
+
     },
     contentContainer: {
         alignItems: 'center',
@@ -120,10 +177,14 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginTop: 10,
+        color: '#675D50',
+        textDecorationLine: 'underline'
+
     },
     userInfo: {
         fontSize: 16,
         marginVertical: 5,
+        color: '#675D50'
     },
     avatar: {
         height: 100,
@@ -132,6 +193,12 @@ const styles = StyleSheet.create({
         overflow: "hidden",
         borderWidth: 3,
         borderColor: '#FFF',
+    },
+    addProfileButton: {
+        backgroundColor: '#ABC4AA',
+        padding: 15,
+        borderRadius: 5,
+        marginTop: 10,
     },
     editProfileButton: {
         backgroundColor: '#ABC4AA',
@@ -149,6 +216,24 @@ const styles = StyleSheet.create({
         color: '#FFF',
         textAlign: 'center',
         fontWeight: 'bold',
+    },
+    iconsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        width: '80%', // Adjust as needed
+        marginBottom: 20, // Adjust as needed
+    },
+    iconButton: {
+        backgroundColor: '#F2F2F2', // Adjust to your button color
+        padding: 10,
+        borderRadius: 50,
+        alignItems: 'center',
+    },
+    socialText: {
+        color: '#675D50',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        margin: 1
     },
 });
 

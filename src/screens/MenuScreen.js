@@ -1,4 +1,4 @@
-import React, {useState, useEffect, forwardRef} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -6,69 +6,52 @@ import {
     ScrollView,
     TouchableOpacity,
     SafeAreaView,
-    StatusBar,
     Image,
+    Modal,
+    TouchableHighlight,
 } from 'react-native';
 import { fetchCategories, fetchProducts } from '../utils/api';
-import {useCart} from "../utils/CartContext";
-import Toast from "react-native-toast-message"; // Adjust the path based on your actual file structure
+import { useCart } from '../utils/CartContext';
 
 const MenuScreen = () => {
     const { dispatch } = useCart();
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [products, setProducts] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        // Fetch categories when the component mounts
         const fetchData = async () => {
             try {
                 const categoriesData = await fetchCategories();
                 setCategories(categoriesData);
             } catch (error) {
-                // Handle error (e.g., display an error message to the user)
                 console.error('Error fetching categories:', error.message);
             }
         };
 
         fetchData();
     }, []);
+
     const handleAddToCart = (product) => {
         dispatch({ type: 'ADD_TO_CART', payload: product });
-        showToast();
+        setModalVisible(true);
     };
 
     const handleCategoryPress = async (category) => {
         try {
-            // Fetch products related to the selected category
             const productsData = await fetchProducts(category.id);
-
-            // Filter products based on the selected category's ID and availability
             const filteredProducts = productsData.filter(
-                (product) => product.category_id === category.id && product.availability === 'Yes'
+                (product) =>
+                    product.category_id === category.id && product.availability === 'Yes'
             );
 
             setProducts(filteredProducts);
             setSelectedCategory(category);
         } catch (error) {
-            // Handle error (e.g., display an error message to the user)
             console.error('Error fetching or filtering products:', error.message);
         }
     };
-    const ToastComponent = forwardRef((props, ref) => {
-        return <Toast {...props} ref={ref} />;
-    });
-    const showToast = () => {
-        Toast.show({
-            type: 'success',
-            position: 'bottom',
-            text1: 'Item added to cart!',
-            visibilityTime: 1000, // 3 seconds
-            autoHide: true,
-            topOffset: StatusBar.currentHeight + 10,
-        });
-    };
-
 
     return (
         <SafeAreaView style={styles.container}>
@@ -92,12 +75,18 @@ const MenuScreen = () => {
                             {products.map((product) => (
                                 <View key={product.id} style={styles.productItem}>
                                     <Image
-                                        source={{ uri: `https://kapenapud.com/storage/${product.image}` }}
+                                        source={{
+                                            uri: `https://kapenapud.com/storage/${product.image}`,
+                                        }}
                                         style={styles.productImage}
                                     />
                                     <Text style={styles.productName}>{product.name}</Text>
-                                    <Text style={styles.productDescription}>{product.description}</Text>
-                                    <Text style={styles.productPrice}>Price: ${product.price}</Text>
+                                    <Text style={styles.productDescription}>
+                                        {product.description}
+                                    </Text>
+                                    <Text style={styles.productPrice}>
+                                        Price: ${product.price}
+                                    </Text>
                                     <TouchableOpacity
                                         style={styles.addToCartButton}
                                         onPress={() => handleAddToCart(product)}
@@ -110,7 +99,30 @@ const MenuScreen = () => {
                     )}
                 </View>
             </ScrollView>
-            <Toast ref={(ref) => Toast.setRef(ref)} />
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Item added to cart!</Text>
+
+                        <TouchableHighlight
+                            style={{ ...styles.openButton }}
+                            onPress={() => {
+                                setModalVisible(!modalVisible);
+                            }}
+                        >
+                            <Text style={styles.textStyle}>OK</Text>
+                        </TouchableHighlight>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        height:50,
+        height: 50,
     },
     categoryButton: {
         backgroundColor: '#675D50',
@@ -140,21 +152,20 @@ const styles = StyleSheet.create({
     productsContainer: {
         flex: 1,
         flexDirection: 'row',
-        flexWrap: 'wrap',  // Allow items to wrap to the next row
+        flexWrap: 'wrap',
         marginTop: 20,
         padding: 10,
-
     },
     productItem: {
-        width: '48%',  // Set the width to occupy approximately half of the container
+        width: '48%',
         marginBottom: 20,
-        marginRight: '2%',  // Add a small margin between items
+        marginRight: '2%',
         padding: 2,
         borderWidth: 1,
         borderRadius: 5,
     },
     productImage: {
-        width: '100%',  // Take up the full width of the item
+        width: '100%',
         height: 100,
         borderRadius: 5,
     },
@@ -183,8 +194,48 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
-
     },
+    // Modal styles
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    openButton: {
+        backgroundColor: '#ABC4AA',
+        borderRadius: 5,
+        padding: 10,
+        paddingHorizontal: 25,
+        elevation: 2,
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+
 });
 
 export default MenuScreen;
