@@ -12,6 +12,7 @@ import {
 import { useCart } from '../utils/CartContext';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from "@react-navigation/native";
 
 // Header component for the cart table
 const CartHeader = () => {
@@ -26,6 +27,8 @@ const CartHeader = () => {
 };
 
 const CartScreen = () => {
+    const navigation = useNavigation();
+
     const { state, dispatch } = useCart();
     const { cart } = state;
     const [isCheckoutModalVisible, setCheckoutModalVisible] = useState(false);
@@ -61,6 +64,7 @@ const CartScreen = () => {
 
             // Close the modal
             setCheckoutModalVisible(false);
+            navigation.navigate('Dashboard'); // This triggers the re-render of the HomeScreen
 
             // Handle the response, for example, display a success message
             console.log('Order confirmed!', response.data);

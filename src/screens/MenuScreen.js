@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     View,
     Text,
@@ -10,11 +10,11 @@ import {
     Modal,
     TouchableHighlight,
 } from 'react-native';
-import { fetchCategories, fetchProducts } from '../utils/api';
-import { useCart } from '../utils/CartContext';
+import {fetchCategories, fetchProducts} from '../utils/api';
+import {useCart} from '../utils/CartContext';
 
 const MenuScreen = () => {
-    const { dispatch } = useCart();
+    const {dispatch} = useCart();
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [products, setProducts] = useState([]);
@@ -34,7 +34,7 @@ const MenuScreen = () => {
     }, []);
 
     const handleAddToCart = (product) => {
-        dispatch({ type: 'ADD_TO_CART', payload: product });
+        dispatch({type: 'ADD_TO_CART', payload: product});
         setModalVisible(true);
     };
 
@@ -113,7 +113,7 @@ const MenuScreen = () => {
                         <Text style={styles.modalText}>Item added to cart!</Text>
 
                         <TouchableHighlight
-                            style={{ ...styles.openButton }}
+                            style={{...styles.openButton}}
                             onPress={() => {
                                 setModalVisible(!modalVisible);
                             }}

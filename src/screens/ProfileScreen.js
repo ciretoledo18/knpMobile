@@ -1,33 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Linking} from 'react-native';
-import { fetchCustomers, fetchUsers } from "../utils/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {useEffect, useState} from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    SafeAreaView,
+    Image,
+    Linking,
+} from 'react-native';
+import {fetchCustomers, fetchUsers} from '../utils/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultAvatar from '../assets/avatar.gif';
-import Icon from "react-native-vector-icons/FontAwesome5";
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({navigation}) => {
     const [userData, setUserData] = useState(null);
     const [customerData, setCustomerData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const openLink = (url) => {
-        Linking.openURL(url).catch((err) => console.error('Error opening URL:', err));
+        Linking.openURL(url).catch((err) =>
+            console.error('Error opening URL:', err)
+        );
     };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const userId = parseInt(await AsyncStorage.getItem('userId'), 10);
+                const userId = parseInt(
+                    await AsyncStorage.getItem('userId'),
+                    10
+                );
 
                 const allUsers = await fetchUsers();
                 const allCustomers = await fetchCustomers();
 
-                const currentUser = allUsers.find(user => user.id === userId);
-                const currentCustomer = allCustomers.find(customer => customer.user_id === userId);
+                const currentUser = allUsers.find((user) => user.id === userId);
+                const currentCustomer = allCustomers.find(
+                    (customer) => customer.user_id === userId
+                );
 
                 setCustomerData(currentCustomer);
                 setUserData(currentUser);
-
             } catch (error) {
                 console.error('Error fetching user data:', error.message);
             } finally {
@@ -36,6 +50,11 @@ const ProfileScreen = ({ navigation }) => {
         };
 
         fetchData();
+
+        const intervalId = setInterval(fetchData, 20000);
+
+        // Clean up the interval when the component is unmounted
+        return () => clearInterval(intervalId);
     }, []);
 
     const handleSignOut = () => {
@@ -44,10 +63,6 @@ const ProfileScreen = ({ navigation }) => {
 
     const handleEditProfile = () => {
         navigation.navigate('EditProfile');
-    };
-
-    const handleAddUserInfo = () => {
-        navigation.navigate('AddUserInfo');
     };
 
     return (
@@ -63,63 +78,119 @@ const ProfileScreen = ({ navigation }) => {
             ) : (
                 <View style={styles.profileContainer}>
                     <View style={styles.cover}>
-                        <Text style={styles.socialText}>Visit our socials!</Text>
                         {/* Icons Section */}
                         <View style={styles.iconsContainer}>
                             {/* Website */}
-                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.kapenapud.com')}>
-                                <Icon name="globe" size={30} color="#E15D44" />
+                            <TouchableOpacity
+                                style={styles.iconButton}
+                                onPress={() =>
+                                    openLink('https://www.kapenapud.com')
+                                }
+                            >
+                                <Icon
+                                    name="globe"
+                                    size={30}
+                                    color="#E15D44"
+                                />
                             </TouchableOpacity>
 
                             {/* Facebook */}
-                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.facebook.com/kapenapud')}>
-                                <Icon name="facebook" size={30} color="#1877F2" />
+                            <TouchableOpacity
+                                style={styles.iconButton}
+                                onPress={() =>
+                                    openLink(
+                                        'https://www.facebook.com/kapenapud'
+                                    )
+                                }
+                            >
+                                <Icon
+                                    name="facebook"
+                                    size={30}
+                                    color="#1877F2"
+                                />
                             </TouchableOpacity>
 
                             {/* TikTok */}
-                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.tiktok.com/@kapenapud')}>
-                                <Icon name="tiktok" size={30} color="#69C9D0" />
+                            <TouchableOpacity
+                                style={styles.iconButton}
+                                onPress={() =>
+                                    openLink(
+                                        'https://www.tiktok.com/@kapenapud'
+                                    )
+                                }
+                            >
+                                <Icon
+                                    name="tiktok"
+                                    size={30}
+                                    color="#69C9D0"
+                                />
                             </TouchableOpacity>
 
                             {/* Instagram */}
-                            <TouchableOpacity style={styles.iconButton} onPress={() => openLink('https://www.instagram.com/kapenapud')}>
-                                <Icon name="instagram" size={30} color="#E4405F" />
+                            <TouchableOpacity
+                                style={styles.iconButton}
+                                onPress={() =>
+                                    openLink(
+                                        'https://www.instagram.com/kapenapud'
+                                    )
+                                }
+                            >
+                                <Icon
+                                    name="instagram"
+                                    size={30}
+                                    color="#E4405F"
+                                />
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={styles.contentContainer}>
                         {customerData ? (
+                            // If customerData is available
                             <>
                                 <Image
                                     style={styles.avatar}
                                     source={
                                         customerData.avatar
-                                            ? { uri: `https://kapenapud.com/storage/${customerData.avatar}` }
+                                            ? {uri: `https://kapenapud.com/storage/${customerData.avatar}`}
                                             : defaultAvatar
                                     }
                                 />
-                                <Text style={styles.userName}>{userData.name}</Text>
-                                <Text style={styles.userInfo}>{userData.email}</Text>
-                                <Text style={styles.userInfo}>{customerData.first_name} {customerData.last_name}</Text>
-                                <Text style={styles.userInfo}>{customerData.gender}</Text>
-                                <Text style={styles.userInfo}>{customerData.birthday}</Text>
-                                <Text style={styles.userInfo}>{customerData.contact_no}</Text>
-                                <Text style={styles.userInfo}>Rewards: {customerData.rewards}</Text>
+                                <Text style={styles.userName}>
+                                    {userData.name}
+                                </Text>
+                                <Text style={styles.userInfo}>
+                                    {userData.email}
+                                </Text>
+                                <Text style={styles.userInfo}>
+                                    Rewards: {customerData.rewards}
+                                </Text>
+                                {/* Additional customerData fields */}
+                                {/* ... */}
                             </>
                         ) : (
+                            // If customerData is not available
                             <>
+                                <Text style={styles.userName}>
+                                    {userData.name}
+                                </Text>
+                                <Text style={styles.userInfo}>
+                                    {userData.email}
+                                </Text>
+                                {/* Additional customerData fields */}
+                                {/* ... */}
                                 <Text style={styles.userInfo}>
                                     Update your profile.
                                 </Text>
                             </>
                         )}
-
-                        <TouchableOpacity
-                            style={styles.editProfileButton}
-                            onPress={handleEditProfile}
-                        >
-                            <Text style={styles.buttonText}>Edit Profile</Text>
-                        </TouchableOpacity>
+                        {/*<TouchableOpacity*/}
+                        {/*    style={styles.editProfileButton}*/}
+                        {/*    onPress={handleEditProfile}*/}
+                        {/*>*/}
+                        {/*    <Text style={styles.buttonText}>*/}
+                        {/*        Edit Profile*/}
+                        {/*    </Text>*/}
+                        {/*</TouchableOpacity>*/}
 
                         <TouchableOpacity
                             style={styles.logoutButton}
@@ -130,7 +201,6 @@ const ProfileScreen = ({ navigation }) => {
                     </View>
                 </View>
             )}
-
         </SafeAreaView>
     );
 };
@@ -163,7 +233,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#ABC4AA',
         justifyContent: 'center',
         alignItems: 'center',
-
     },
     contentContainer: {
         alignItems: 'center',
@@ -178,19 +247,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 10,
         color: '#675D50',
-        textDecorationLine: 'underline'
-
+        textDecorationLine: 'underline',
     },
     userInfo: {
         fontSize: 16,
         marginVertical: 5,
-        color: '#675D50'
+        color: '#675D50',
     },
     avatar: {
         height: 100,
         width: 100,
         borderRadius: 50,
-        overflow: "hidden",
+        overflow: 'hidden',
         borderWidth: 3,
         borderColor: '#FFF',
     },
@@ -233,7 +301,7 @@ const styles = StyleSheet.create({
         color: '#675D50',
         textAlign: 'center',
         fontWeight: 'bold',
-        margin: 1
+        margin: 1,
     },
 });
 

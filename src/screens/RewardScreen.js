@@ -27,7 +27,7 @@ const RewardScreen = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [navigation]);
 
     const qrCodeData = 'https://kapenapud.com'; // URL to link
 

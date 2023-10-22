@@ -12,11 +12,11 @@ const Tab = createMaterialBottomTabNavigator();
 
 const BottomNavigator = () => {
     return (
-        <CartProvider>
             <Tab.Navigator
                 barStyle={{ backgroundColor: '#A9907E' }}
                 activeColor="#675D50"
                 inactiveColor="#F3DEBA"
+                shifting={true}
             >
                 <Tab.Screen
                     name="Dashboard"
@@ -65,7 +65,6 @@ const BottomNavigator = () => {
                     }}
                 />
             </Tab.Navigator>
-        </CartProvider>
     );
 };
 

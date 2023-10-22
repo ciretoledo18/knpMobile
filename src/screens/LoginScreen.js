@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, Image, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
 import {loginUser} from '../utils/api';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
@@ -8,12 +9,19 @@ const LoginScreen = ({navigation}) => {
 
     const handleLogin = async () => {
         try {
-            const token = await loginUser(email, password);
+            const token = await loginUser(email, password)
             // Do something with the token (e.g., navigate to another screen)
-            console.log('Login successful. Token:', token);
+            const user = await AsyncStorage.getItem('userData');
+            const userData = JSON.parse(user)
 
+            if (userData.role_id === 1 || userData.role_id === 2) {
+                navigation.replace('StaffNav', {token});
+
+            } else {
+                navigation.replace('Home', {token});
+
+            }
             // Navigate to the Home screen
-            navigation.replace('Home', {token});
         } catch (error) {
             // Handle login error (display an error message, etc.)
             console.error('Login failed:', error.message);

@@ -1,19 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { fetchProducts, fetchRewards } from '../utils/api';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
+import {fetchProducts, fetchRewards, fetchUserOrders} from '../utils/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeScreen = () => {
+    const [orderData, setOrderData] = useState(null);
     const [rewardsData, setRewardsData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [products, setProducts] = useState([]);
+
+    const navigation = useNavigation();
+
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const allRewards = await fetchRewards();
                 const allProducts = await fetchProducts();
-
+                const userId = parseInt(await AsyncStorage.getItem('userId'), 10);
                 const featuredProducts = allProducts.filter((product) => product.is_featured === 1);
+                const allOrders = await fetchUserOrders(userId);
+
+                setOrderData(allOrders);
                 setProducts(featuredProducts); // Set featured products
                 setRewardsData(allRewards);
             } catch (error) {
@@ -24,15 +34,19 @@ const HomeScreen = () => {
         };
 
         fetchData();
-    }, []);
 
+        const intervalId = setInterval(fetchData, 20000);
 
+        // Clean up the interval when the component is unmounted
+        return () => clearInterval(intervalId);
+    }, [navigation]);
 
     const formatDate = (dateString) => {
-        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        const options = {month: 'short', day: 'numeric', year: 'numeric'};
         const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
         return formattedDate;
     };
+
 
     return (
         <View style={styles.container}>
@@ -47,10 +61,7 @@ const HomeScreen = () => {
                         {rewardsData && rewardsData.length > 0 ? (
                             rewardsData.map((reward, index) => (
                                 <View key={index} style={styles.rewardItem}>
-                                    <Image
-                                        style={styles.rewardImage}
-                                        source={require('../assets/icon.png')}
-                                    />
+                                    <Image style={styles.rewardImage} source={require('../assets/icon.png')}/>
                                     <View style={styles.rewardTextContainer}>
                                         <Text style={styles.rewardName}>{reward.name}</Text>
                                         <Text>{reward.description}</Text>
@@ -67,14 +78,11 @@ const HomeScreen = () => {
 
                     {/* Featured Products Section */}
                     <Text style={styles.featuredProductsTitle}>Featured Products</Text>
-
                     <ScrollView style={styles.featuredProductsContainer}>
                         {products.map((product, index) => (
                             <View key={index} style={styles.cardContainer}>
-                                <Image
-                                    style={styles.cardImage}
-                                    source={{ uri: `http://kapenapud.com/storage/${product.image}` }}
-                                />
+                                <Image style={styles.cardImage}
+                                       source={{uri: `http://kapenapud.com/storage/${product.image}`}}/>
                                 <View style={styles.cardTextContainer}>
                                     <Text style={styles.cardName}>{product.name}</Text>
                                     <Text style={styles.cardDescription}>{product.description}</Text>
@@ -83,6 +91,20 @@ const HomeScreen = () => {
                             </View>
                         ))}
                     </ScrollView>
+
+                    {/* Pending Orders Section */}
+                    <TouchableOpacity style={styles.pendingOrdersContainer}
+                                      onPress={() => navigation.navigate('PendingScreen')}>
+                        <View style={styles.pendingOrdersLeftColumn}>
+                            <Icon name="cart" size={50} color="#FFF" style={styles.cartIcon}/>
+                            <Text style={styles.pendingOrdersTitle}>Orders Pending</Text>
+                        </View>
+                        <View style={styles.pendingOrdersRightColumn}>
+                            <Text style={styles.pendingOrdersCount}>
+                                {orderData && orderData.filter((order) => order.status === 0).length}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
             )}
         </View>
@@ -98,11 +120,9 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         width: '90%',
-
     },
     rewardsContainer: {
         marginBottom: 20,
-
     },
     rewardsTitle: {
         fontSize: 24,
@@ -161,6 +181,45 @@ const styles = StyleSheet.create({
     },
     cardDescription: {
         color: '#666666',
+    },
+    pendingOrdersContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginTop: 20,
+        width: '100%',
+        backgroundColor: '#F3DEBA', // Background color for the whole section
+        borderRadius: 10,
+    },
+    pendingOrdersLeftColumn: {
+        alignItems: 'center',
+        backgroundColor: '#675D50',
+        padding: 10,
+    },
+    cartIcon: {
+        width: 50,
+        height: 50,
+        marginBottom: 10,
+    },
+    pendingOrdersTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white'
+    },
+    pendingOrdersRightColumn: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    loadingStyle: {
+        width: 50, // Adjust the width as needed
+        height: 50, // Adjust the height as needed
+        backgroundColor: '#FFF', // Background color for the loading style
+        marginBottom: 10,
+        borderRadius: 10,
+    },
+    pendingOrdersCount: {
+        fontSize: 90,
+        fontWeight: 'bold',
+        color: '#675D50',
     },
 });
 

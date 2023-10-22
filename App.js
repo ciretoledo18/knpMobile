@@ -7,20 +7,38 @@ import RegisterScreen from "./src/screens/RegisterScreen";
 import BottomNavigator from "./src/components/navigator";
 import TransactionHistoryScreen from "./src/screens/TransactionHistoryScreen";
 import EditProfileScreen from "./src/screens/EditProfileScreen";
+import StaffHomeScreen from "./src/screens/staff/StaffHomeScreen";
+import StaffNavigator from "./src/components/staffnavigator";
+import PendingScreen from "./src/screens/PendingScreen";
+import {CartProvider} from "./src/utils/CartContext";
+import HomeScreen from "./src/screens/HomeScreen";
 
 const Stack = createStackNavigator();
 
 const App = () => {
     return (
         <NavigationContainer>
+            <CartProvider>
+
             <Stack.Navigator>
+
                 <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+
+                {/*Customer*/}
+
                 <Stack.Screen name="Home" component={BottomNavigator} options={{ headerShown: false }} />
+                <Stack.Screen name="Dashboard" component={HomeScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Orders" component={TransactionHistoryScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="PendingScreen" component={PendingScreen} options={{ headerShown: false }} />
 
+                {/*Staff*/}
+                <Stack.Screen name="StaffHome" component={StaffHomeScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="StaffMenu" component={StaffHomeScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="StaffNav" component={StaffNavigator} options={{ headerShown: false }} />
             </Stack.Navigator>
+            </CartProvider>
         </NavigationContainer>
     );
 };
