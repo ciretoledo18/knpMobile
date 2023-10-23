@@ -1,20 +1,21 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    SafeAreaView,
     Image,
     Modal,
     TouchableHighlight,
 } from 'react-native';
-import {fetchCategories, fetchProducts} from '../utils/api';
-import {useCart} from '../utils/CartContext';
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import { fetchCategories, fetchProducts } from '../utils/api';
+import { useCart } from '../utils/CartContext';
 
 const MenuScreen = () => {
-    const {dispatch} = useCart();
+    const { dispatch } = useCart();
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [products, setProducts] = useState([]);
@@ -34,7 +35,7 @@ const MenuScreen = () => {
     }, []);
 
     const handleAddToCart = (product) => {
-        dispatch({type: 'ADD_TO_CART', payload: product});
+        dispatch({ type: 'ADD_TO_CART', payload: product });
         setModalVisible(true);
     };
 
@@ -70,7 +71,7 @@ const MenuScreen = () => {
             </ScrollView>
             <ScrollView>
                 <View>
-                    {selectedCategory && (
+                    {selectedCategory ? (
                         <View style={styles.productsContainer}>
                             {products.map((product) => (
                                 <View key={product.id} style={styles.productItem}>
@@ -91,10 +92,20 @@ const MenuScreen = () => {
                                         style={styles.addToCartButton}
                                         onPress={() => handleAddToCart(product)}
                                     >
-                                        <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+                                        <Text style={styles.addToCartButtonText}>
+                                            Add to Cart
+                                        </Text>
                                     </TouchableOpacity>
                                 </View>
                             ))}
+                        </View>
+                    ) : (
+                        <View style={styles.centerIconContainer}>
+                            <Image
+                                source={require('../../assets/icon.png')}
+                                style={styles.centerIcon}
+                            />
+                            <Text style={styles.centerIconText}>Select a category</Text>
                         </View>
                     )}
                 </View>
@@ -113,7 +124,7 @@ const MenuScreen = () => {
                         <Text style={styles.modalText}>Item added to cart!</Text>
 
                         <TouchableHighlight
-                            style={{...styles.openButton}}
+                            style={{ ...styles.openButton }}
                             onPress={() => {
                                 setModalVisible(!modalVisible);
                             }}
@@ -235,7 +246,20 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-
+    centerIconContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    centerIcon: {
+        width: 100, // Adjust the width and height as needed
+        height: 100,
+    },
+    centerIconText: {
+        marginTop: 10,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 });
 
 export default MenuScreen;

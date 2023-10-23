@@ -3,17 +3,19 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import StaffHomeScreen from "../screens/staff/StaffHomeScreen";
 import StaffMenuScreen from "../screens/staff/StaffMenuScreen";
+import StaffCartScreen from "../screens/staff/StaffCartScreen";
+import StaffProfileScreen from "../screens/staff/StaffProfileScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 
 const StaffNavigator = () => {
     return (
             <Tab.Navigator
-                barStyle={{ backgroundColor: '#FAF8ED' }}
-                activeColor="#748E63"
+                barStyle={{ backgroundColor: '#675D50' }}
+                activeColor="#675D50"
                 shifting={true}
                 labeled={false}
-                inactiveColor="#99B080">
+                inactiveColor="#F3DEBA">
                 <Tab.Screen
                     name="StaffHome"
                     component={StaffHomeScreen}
@@ -31,22 +33,22 @@ const StaffNavigator = () => {
                             <Icon name="food" color={color} size={26} />
                         ),
                     }}/>
-                {/*<Tab.Screen*/}
-                {/*    name="Cart"*/}
-                {/*    component={StaffCartScreen}*/}
-                {/*    options={{*/}
-                {/*        tabBarIcon: ({ color }) => (*/}
-                {/*            <Icon name="cart" color={color} size={26} />*/}
-                {/*        ),*/}
-                {/*    }}/>*/}
-                {/*<Tab.Screen*/}
-                {/*    name="Reward"*/}
-                {/*    component={StaffRewardScreen}*/}
-                {/*    options={{*/}
-                {/*        tabBarIcon: ({ color }) => (*/}
-                {/*            <Icon name="star" color={color} size={26} />*/}
-                {/*        ),*/}
-                {/*    }}/>*/}
+                <Tab.Screen
+                    name="Cart"
+                    component={StaffCartScreen}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <Icon name="cart" color={color} size={26} />
+                        ),
+                    }}/>
+                <Tab.Screen
+                    name="Profile"
+                    component={StaffProfileScreen}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <Icon name="account" color={color} size={26} />
+                        ),
+                    }}/>
             </Tab.Navigator>
     );
 };

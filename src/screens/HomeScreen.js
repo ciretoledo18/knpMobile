@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, ScrollView, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native';
 import {fetchProducts, fetchRewards, fetchUserOrders} from '../utils/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
@@ -35,7 +35,7 @@ const HomeScreen = () => {
 
         fetchData();
 
-        const intervalId = setInterval(fetchData, 20000);
+        const intervalId = setInterval(fetchData, 5000);
 
         // Clean up the interval when the component is unmounted
         return () => clearInterval(intervalId);
@@ -49,12 +49,27 @@ const HomeScreen = () => {
 
 
     return (
+        <SafeAreaView style={styles.safeAreaViewContainer}>
+
         <View style={styles.container}>
             {/* Rewards and Featured Products Section */}
             {isLoading ? (
                 <Text>Loading data...</Text>
             ) : (
                 <View style={styles.contentContainer}>
+                    {/* Pending Orders Section */}
+                    <TouchableOpacity style={styles.pendingOrdersContainer}
+                                      onPress={() => navigation.navigate('PendingScreen')}>
+                        <View style={styles.pendingOrdersLeftColumn}>
+                            <Icon name="cart" size={50} color="#FFF" style={styles.cartIcon}/>
+                            <Text style={styles.pendingOrdersTitle}>Orders Pending</Text>
+                        </View>
+                        <View style={styles.pendingOrdersRightColumn}>
+                            <Text style={styles.pendingOrdersCount}>
+                                {orderData && orderData.filter((order) => order.status === 0).length}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
                     {/* Rewards Section */}
                     <Text style={styles.rewardsTitle}>Current Promotion/s</Text>
                     <ScrollView style={styles.rewardsContainer}>
@@ -91,27 +106,17 @@ const HomeScreen = () => {
                             </View>
                         ))}
                     </ScrollView>
-
-                    {/* Pending Orders Section */}
-                    <TouchableOpacity style={styles.pendingOrdersContainer}
-                                      onPress={() => navigation.navigate('PendingScreen')}>
-                        <View style={styles.pendingOrdersLeftColumn}>
-                            <Icon name="cart" size={50} color="#FFF" style={styles.cartIcon}/>
-                            <Text style={styles.pendingOrdersTitle}>Orders Pending</Text>
-                        </View>
-                        <View style={styles.pendingOrdersRightColumn}>
-                            <Text style={styles.pendingOrdersCount}>
-                                {orderData && orderData.filter((order) => order.status === 0).length}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
                 </View>
             )}
         </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    safeAreaViewContainer: {
+        flex: 1,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',

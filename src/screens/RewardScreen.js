@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import QRCode from 'react-native-qrcode-svg';
-import {fetchCustomers} from '../utils/api';
+import { fetchCustomers } from '../utils/api';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const RewardScreen = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +28,10 @@ const RewardScreen = () => {
             }
         };
         fetchData();
+        const intervalId = setInterval(fetchData, 5000);
+
+        // Clean up the interval when the component is unmounted
+        return () => clearInterval(intervalId);
     }, [navigation]);
 
     const qrCodeData = 'https://kapenapud.com'; // URL to link
@@ -36,7 +41,7 @@ const RewardScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.headerText}>Scan QR for Rewards!</Text>
 
             {stamps > 0 ? (
@@ -68,7 +73,7 @@ const RewardScreen = () => {
             <TouchableOpacity style={styles.buttonContainer} onPress={handleTransactionHistoryPress}>
                 <Text style={styles.buttonText}>View Transaction History</Text>
             </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 };
 

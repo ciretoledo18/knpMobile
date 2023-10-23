@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import axios from 'axios';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');
@@ -10,31 +11,26 @@ const RegisterScreen = ({ navigation }) => {
 
     const handleRegister = async () => {
         try {
-            // Make a request to register the user
             const response = await axios.post('https://kapenapud.com/api/auth/register', {
                 name,
                 email,
                 password,
             });
 
-            // Assuming the registration was successful
             if (response.status === 200) {
-                // Display the popup
                 setShowPopup(true);
             }
         } catch (error) {
             console.error('Registration failed:', error.message);
-            // Handle registration error (display an error message, etc.)
         }
     };
 
     const navigateToLogin = () => {
-        // Navigate to the Login screen
         navigation.navigate('Login');
     };
 
     return (
-        <View style={styles.bgContainer}>
+        <SafeAreaView style={styles.bgContainer}>
             <View style={styles.centeredView}>
                 <Modal
                     animationType="slide"
@@ -98,7 +94,7 @@ const RegisterScreen = ({ navigation }) => {
                     </View>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -183,7 +179,6 @@ const styles = StyleSheet.create({
         color: '#007bff',
         fontWeight: 'bold',
     },
-    // Styles for the popup
     modalView: {
         backgroundColor: '#fff',
         borderRadius: 12,

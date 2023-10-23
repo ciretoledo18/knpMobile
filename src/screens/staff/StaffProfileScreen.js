@@ -7,14 +7,13 @@ import {
     Image,
     Linking,
 } from 'react-native';
-import {fetchCustomers, fetchUsers} from '../utils/api';
+import {fetchCustomers, fetchUsers} from '../../utils/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultAvatar from '../assets/avatar.gif';
+import defaultAvatar from '../../assets/avatar.gif';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
-const ProfileScreen = ({navigation}) => {
+const StaffProfileScreen = ({navigation}) => {
     const [userData, setUserData] = useState(null);
     const [customerData, setCustomerData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +58,7 @@ const ProfileScreen = ({navigation}) => {
     }, []);
 
     const handleSignOut = () => {
+
         navigation.replace('Login');
     };
 
@@ -71,7 +71,7 @@ const ProfileScreen = ({navigation}) => {
             {isLoading ? (
                 <View style={styles.loadingContainer}>
                     <Image
-                        source={require('../assets/icon.png')}
+                        source={require('../../assets/icon.png')}
                         style={styles.logo}
                     />
                     <Text style={styles.loadingText}>Loading...</Text>
@@ -162,26 +162,21 @@ const ProfileScreen = ({navigation}) => {
                                 <Text style={styles.userInfo}>
                                     {userData.email}
                                 </Text>
-                                <Text style={styles.userInfo}>
-                                    Rewards: {customerData.rewards !== null && customerData.rewards !== undefined ? customerData.rewards : 0}
-                                </Text>
-
-                                {/* Additional customerData fields */}
-                                {/* ... */}
                             </>
                         ) : (
                             // If customerData is not available
                             <>
+                                <Image
+                                    style={styles.avatar}
+                                    source={
+                                        defaultAvatar
+                                    }
+                                />
                                 <Text style={styles.userName}>
                                     {userData.name}
                                 </Text>
                                 <Text style={styles.userInfo}>
                                     {userData.email}
-                                </Text>
-                                {/* Additional customerData fields */}
-                                {/* ... */}
-                                <Text style={styles.userInfo}>
-                                    Update your profile.
                                 </Text>
                             </>
                         )}
@@ -307,4 +302,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ProfileScreen;
+export default StaffProfileScreen;

@@ -1,41 +1,70 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal, FlatList, ScrollView} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    SafeAreaView,
+    Modal,
+    FlatList,
+    ScrollView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {fetchProducts, fetchUserOrders} from '../utils/api';
+import {
+    fetchAllOrders,
+    fetchProducts,
+    updateOrderStatus,
+} from '../../utils/api';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import the icon library
 
-const PendingScreen = ({navigation}) => {
+const StaffPendingScreen = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [orderData, setOrderData] = useState(null);
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const userId = parseInt(await AsyncStorage.getItem('userId'), 10);
-                const allOrders = await fetchUserOrders(userId);
-                const products = await fetchProducts();
-                const pendingOrders = allOrders.filter((order) => order.status === 0);
-                // console.log(allOrders)
-                setOrderData(pendingOrders);
-                setAllProducts(products);
-            } catch (error) {
-                console.error('Error fetching data:', error.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    const fetchData = async () => {
+        try {
+            const allOrders = await fetchAllOrders();
+            const products = await fetchProducts();
+            const pendingOrders = allOrders.filter(order => order.status === 0);
 
+            setOrderData(pendingOrders);
+            setAllProducts(products);
+        } catch (error) {
+            console.error('Error fetching data:', error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchData();
-    }, [navigation]);
+    }, []);
+
+    useEffect(() => {
+        if (!selectedOrder) {
+            fetchData();
+        }
+    }, [selectedOrder]);
 
     const findProductName = (productId) => {
         const product = allProducts.find((product) => product.id === productId);
         return product ? product.name : 'Product not found';
     };
 
-    const renderItem = ({item}) => (
+    const handleCompleteOrder = async () => {
+        try {
+            if (selectedOrder) {
+                await updateOrderStatus(selectedOrder.id);
+                setSelectedOrder(null);
+            }
+        } catch (error) {
+            console.error('Error completing order:', error.message);
+        }
+    };
+
+    const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.orderButton}
             onPress={() => setSelectedOrder(item)}
@@ -46,7 +75,7 @@ const PendingScreen = ({navigation}) => {
                     <Text>{`Items: ${item.order_product.length}`}</Text>
                     <Text>{`Total Price: $${item.total_price}`}</Text>
                 </View>
-                <Icon name="clock-o" size={20} color="#000" style={styles.clockIcon}/>
+                <Icon name="clock-o" size={20} color="#000" style={styles.clockIcon} />
             </View>
         </TouchableOpacity>
     );
@@ -62,7 +91,6 @@ const PendingScreen = ({navigation}) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                {/* Back Button */}
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
@@ -81,10 +109,11 @@ const PendingScreen = ({navigation}) => {
                         renderItem={renderItem}
                     />
                 ) : (
-                    <Text style={styles.subHeaderText}>No pending orders. Have another cup with us!</Text>
+                    <Text style={styles.subHeaderText}>
+                        No current customer orders!
+                    </Text>
                 )}
 
-                {/* Modal for displaying order details */}
                 <Modal
                     visible={selectedOrder !== null}
                     transparent={true}
@@ -92,16 +121,24 @@ const PendingScreen = ({navigation}) => {
                 >
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Order Details</Text>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>Order Details</Text>
+                                <TouchableOpacity
+                                    style={styles.closeModalButton}
+                                    onPress={() => setSelectedOrder(null)}
+                                >
+                                    <Text style={styles.closeModalText}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
                             <ScrollView style={styles.scrollView}>
                                 {selectedOrder &&
                                     selectedOrder.order_product.map(renderOrderItem)}
                             </ScrollView>
                             <TouchableOpacity
-                                style={styles.closeModalButton}
-                                onPress={() => setSelectedOrder(null)}
+                                style={styles.completeButton}
+                                onPress={handleCompleteOrder}
                             >
-                                <Text style={styles.closeModalText}>Close</Text>
+                                <Text style={styles.completeButtonText}>Complete</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -110,7 +147,6 @@ const PendingScreen = ({navigation}) => {
         </SafeAreaView>
     );
 };
-
 
 const styles = StyleSheet.create({
     safeArea: {
@@ -138,7 +174,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 20,
         marginBottom: 10,
-        textAlign: 'center'
+        textAlign: 'center',
     },
     orderButton: {
         backgroundColor: '#E0E0E0',
@@ -165,10 +201,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '80%',
     },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
     modalTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 10,
     },
     scrollView: {
         maxHeight: '60%',
@@ -183,20 +224,30 @@ const styles = StyleSheet.create({
         backgroundColor: '#3E2723',
         padding: 10,
         borderRadius: 5,
-        marginTop: 10,
-        alignSelf: 'flex-end',
     },
     closeModalText: {
         color: '#FFF',
         fontSize: 16,
         fontWeight: 'bold',
     },
+    completeButton: {
+        backgroundColor: '#4CAF50',
+        padding: 15,
+        borderRadius: 5,
+        marginTop: 10,
+    },
+    completeButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
     subHeaderText: {
         color: 'black',
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
-    }
+    },
 });
 
-export default PendingScreen;
+export default StaffPendingScreen;

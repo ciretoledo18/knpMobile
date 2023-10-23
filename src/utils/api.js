@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BASE_URL = 'https://kapenapud.com/api';
 
+
 export const loginUser = async (email, password) => {
     try {
         const response = await axios.post(`${BASE_URL}/auth/login`, {
@@ -130,5 +131,41 @@ export const fetchRewards = async () => {
         // Handle error (e.g., display an error message to the user)
         console.error('Error fetching all orders:', error.message);
         throw error;
+    }
+};
+
+export const fetchAllOrders = async (userId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/orders`);
+        return response.data.data;
+    } catch (error) {
+        // Handle error (e.g., display an error message to the user)
+        console.error('Error fetching all orders:', error.message);
+        throw error;
+    }
+};
+export const updateOrderStatus = async (orderId) => {
+    try {
+        const response = await fetch(`${BASE_URL}/orders/${orderId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                // Include any additional headers as needed
+            },
+            body: JSON.stringify({
+                status: 1, // Assuming 1 represents the "complete" status
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update order status');
+        }
+
+        // Assuming your API returns the updated order data
+        const updatedOrder = await response.json();
+
+        return updatedOrder;
+    } catch (error) {
+        throw new Error(`Error updating order status: ${error.message}`);
     }
 };

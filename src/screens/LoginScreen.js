@@ -1,43 +1,40 @@
-import React, {useState} from 'react';
-import {View, Text, Image, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
-import {loginUser} from '../utils/api';
+import React, { useState } from 'react';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from '@react-navigation/native';
+import { loginUser } from '../utils/api';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigation = useNavigation();
 
     const handleLogin = async () => {
         try {
-            const token = await loginUser(email, password)
-            // Do something with the token (e.g., navigate to another screen)
+            const token = await loginUser(email, password);
             const user = await AsyncStorage.getItem('userData');
-            const userData = JSON.parse(user)
+            const userData = JSON.parse(user);
 
             if (userData.role_id === 1 || userData.role_id === 2) {
-                navigation.replace('StaffNav', {token});
-
+                navigation.replace('StaffNav', { token });
             } else {
-                navigation.replace('Home', {token});
-
+                navigation.replace('Home', { token });
             }
-            // Navigate to the Home screen
         } catch (error) {
-            // Handle login error (display an error message, etc.)
             console.error('Login failed:', error.message);
         }
     };
 
     const handleRegister = () => {
-        // Navigate to the Register screen
         navigation.navigate('Register');
     };
 
     return (
-        <View style={styles.bgContainer}>
+        <SafeAreaView style={styles.bgContainer}>
             <View style={styles.centeredView}>
                 <TouchableOpacity style={styles.logoContainer}>
-                    <Image style={styles.logo} source={require('../assets/icon.png')}/>
+                    <Image style={styles.logo} source={require('../assets/icon.png')} />
                     <Text style={styles.logoText}>kape na pud</Text>
                 </TouchableOpacity>
                 <View style={styles.formContainer}>
@@ -72,7 +69,7 @@ const LoginScreen = ({navigation}) => {
                     </View>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -80,10 +77,6 @@ const styles = StyleSheet.create({
     bgContainer: {
         flex: 1,
         backgroundColor: '#ABC4AA',
-    },
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
     },
     centeredView: {
         flex: 1,
@@ -111,7 +104,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: {width: 0, height: 2},
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         elevation: 2,
     },
@@ -139,26 +132,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         padding: 12,
-    },
-    checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 16,
-    },
-    checkboxLabelContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    checkboxText: {
-        marginLeft: 8,
-        fontSize: 14,
-        color: '#666',
-    },
-    forgotPassword: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: 'blue',
     },
     signInButton: {
         backgroundColor: '#A9907E',

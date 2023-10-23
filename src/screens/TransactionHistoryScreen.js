@@ -21,11 +21,20 @@ const TransactionHistoryScreen = ({ navigation }) => {
         };
 
         fetchData();
-    }, []);
+    }, [navigation]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
+
+                {/* Back Button */}
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Text style={styles.backButtonText}>Back</Text>
+                </TouchableOpacity>
+
                 {isLoading ? (
                     <View style={styles.loadingContainer}>
                         {/* Add your logo image source and style */}
@@ -50,16 +59,8 @@ const TransactionHistoryScreen = ({ navigation }) => {
                                 ))}
                             </ScrollView>
                         ) : (
-                            <Text>Order your first coffee!</Text>
+                            <Text style={styles.headerText}>Order your first coffee!</Text>
                         )}
-
-                        {/* Back Button */}
-                        <TouchableOpacity
-                            style={styles.backButton}
-                            onPress={() => navigation.goBack()}
-                        >
-                            <Text style={styles.backButtonText}>Back</Text>
-                        </TouchableOpacity>
                     </>
                 )}
             </View>
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 24,
         marginBottom: 10,
+        textAlign: 'center'
     },
     orderContainer: {
         marginVertical: 10,

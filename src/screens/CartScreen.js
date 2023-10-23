@@ -1,4 +1,3 @@
-// CartScreen.js
 import React, { useState } from 'react';
 import {
     View,
@@ -8,11 +7,13 @@ import {
     SafeAreaView,
     TouchableOpacity,
     Modal,
+    Alert,
 } from 'react-native';
 import { useCart } from '../utils/CartContext';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { playSound } from "../utils/CustomerSoundUtility";
 
 // Header component for the cart table
 const CartHeader = () => {
@@ -44,7 +45,7 @@ const CartScreen = () => {
             // Create the checkout data
             const checkoutData = {
                 userId: userId, // Replace with the actual user ID
-                paymentId: 2, // Replace with the actual payment ID
+                paymentId: 1, // Replace with the actual payment ID
                 totalPrice: total,
                 cartItems: cart.map((item) => ({
                     productId: item.id,
@@ -64,18 +65,14 @@ const CartScreen = () => {
 
             // Close the modal
             setCheckoutModalVisible(false);
+            playSound();
             navigation.navigate('Dashboard'); // This triggers the re-render of the HomeScreen
 
             // Handle the response, for example, display a success message
-            console.log('Order confirmed!', response.data);
         } catch (error) {
             // Handle the error, for example, display an error message
             console.error('Error confirming order:', error.message);
         }
-    };
-
-    const handleClearCart = () => {
-        setClearCartModalVisible(true);
     };
 
     const handleClearCartConfirmed = () => {
@@ -83,6 +80,21 @@ const CartScreen = () => {
         dispatch({ type: 'CLEAR_CART' });
         // Close the modal
         setClearCartModalVisible(false);
+    };
+
+    const handleCheckoutPress = async () => {
+        // Check if the cart is empty
+        if (cart.length === 0) {
+            // Show an alert if the cart is empty
+            Alert.alert(
+                'Empty Cart',
+                'Your cart is empty. Add some items before proceeding to checkout.'
+            );
+            return;
+        }
+
+        // Continue with the checkout process
+        setCheckoutModalVisible(true);
     };
 
     return (
@@ -117,7 +129,7 @@ const CartScreen = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.checkoutButton}
-                    onPress={() => setCheckoutModalVisible(true)}
+                    onPress={handleCheckoutPress}
                 >
                     <Text style={styles.checkoutButtonText}>Checkout</Text>
                 </TouchableOpacity>
@@ -135,17 +147,13 @@ const CartScreen = () => {
                         </Text>
                         <TouchableOpacity
                             style={styles.modalButton}
-                            onPress={() => {
-                                handleConfirmOrder();
-                            }}
+                            onPress={handleConfirmOrder}
                         >
                             <Text style={styles.modalButtonText}>Confirm</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.declineButton}
-                            onPress={() => {
-                                setCheckoutModalVisible(false);
-                            }}
+                            onPress={() => setCheckoutModalVisible(false)}
                         >
                             <Text style={styles.declineButtonText}>Decline</Text>
                         </TouchableOpacity>
@@ -165,17 +173,13 @@ const CartScreen = () => {
                         </Text>
                         <TouchableOpacity
                             style={styles.modalButton}
-                            onPress={() => {
-                                handleClearCartConfirmed();
-                            }}
+                            onPress={handleClearCartConfirmed}
                         >
                             <Text style={styles.modalButtonText}>Confirm</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.declineButton}
-                            onPress={() => {
-                                setClearCartModalVisible(false);
-                            }}
+                            onPress={() => setClearCartModalVisible(false)}
                         >
                             <Text style={styles.declineButtonText}>Cancel</Text>
                         </TouchableOpacity>
@@ -185,8 +189,6 @@ const CartScreen = () => {
         </SafeAreaView>
     );
 };
-
-
 
 const styles = StyleSheet.create({
     container: {
@@ -230,18 +232,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginTop: 16,
-    },
-    confirmButton: {
-        backgroundColor: 'green',
-        padding: 12,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginTop: 16,
-    },
-    confirmButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
     modalContainer: {
         flex: 1,
@@ -305,6 +295,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+
 });
 
 export default CartScreen;
