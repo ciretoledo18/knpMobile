@@ -86,7 +86,7 @@ const MenuScreen = () => {
                                         {product.description}
                                     </Text>
                                     <Text style={styles.productPrice}>
-                                        Price: ${product.price}
+                                        Price: ₱{product.price}
                                     </Text>
                                     <TouchableOpacity
                                         style={styles.addToCartButton}

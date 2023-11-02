@@ -2,9 +2,8 @@ import React from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import StaffHomeScreen from "../screens/staff/StaffHomeScreen";
-import StaffMenuScreen from "../screens/staff/StaffMenuScreen";
-import StaffCartScreen from "../screens/staff/StaffCartScreen";
 import StaffProfileScreen from "../screens/staff/StaffProfileScreen";
+import StaffPosScreen from "../screens/staff/StaffPosScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -26,16 +25,8 @@ const StaffNavigator = () => {
                         ),
                     }}/>
                 <Tab.Screen
-                    name="StaffMenu"
-                    component={StaffMenuScreen}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <Icon name="food" color={color} size={26} />
-                        ),
-                    }}/>
-                <Tab.Screen
-                    name="Cart"
-                    component={StaffCartScreen}
+                    name="StaffPos"
+                    component={StaffPosScreen}
                     options={{
                         tabBarIcon: ({ color }) => (
                             <Icon name="cart" color={color} size={26} />

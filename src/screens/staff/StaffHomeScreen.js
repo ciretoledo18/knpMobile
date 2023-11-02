@@ -6,7 +6,6 @@ import {
     Image,
     ScrollView,
     TouchableOpacity,
-    Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -14,8 +13,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fetchAllOrders, fetchProducts, fetchRewards, fetchUserOrders } from '../../utils/api';
 import { playSound } from '../../utils/StaffSoundUtility';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const { width, height } = Dimensions.get('window');
 
 const StaffHomeScreen = () => {
     const [orderData, setOrderData] = useState(null);
@@ -53,7 +50,7 @@ const StaffHomeScreen = () => {
 
         fetchData();
 
-        const intervalId = setInterval(fetchData, 5000);
+        const intervalId = setInterval(fetchData, 7000);
 
         // Clean up the interval when the component is unmounted
         return () => clearInterval(intervalId);
@@ -67,14 +64,13 @@ const StaffHomeScreen = () => {
 
     return (
         <SafeAreaView style={styles.safeAreaViewContainer} >
-            <View style={styles.container}>
-                {/* Pending Orders Section */}
+            <View style={styles.headerContainer}>
                 <TouchableOpacity
                     style={styles.pendingOrdersContainer}
                     onPress={() => navigation.navigate('StaffPending')}
                 >
                     <View style={styles.pendingOrdersLeftColumn}>
-                        <Icon name="cart" size={width * 0.15} color="#FFF" style={styles.cartIcon} />
+                        <Icon name="cart" size={24} color="#FFF" style={styles.cartIcon} />
                         <Text style={styles.pendingOrdersTitle}>Orders Pending</Text>
                     </View>
                     <View style={styles.pendingOrdersRightColumn}>
@@ -83,51 +79,64 @@ const StaffHomeScreen = () => {
                         </Text>
                     </View>
                 </TouchableOpacity>
+            </View>
+            <View style={styles.container}>
 
-                {/* Rewards and Featured Products Section */}
-                {isLoading ? (
-                    <Text>Loading data...</Text>
-                ) : (
-                    <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
-                        {/* Rewards Section */}
-                        <Text style={styles.rewardsTitle}>Current Promotion/s</Text>
-                        <ScrollView style={styles.rewardsContainer} showsVerticalScrollIndicator={false}>
-                            {rewardsData && rewardsData.length > 0 ? (
-                                rewardsData.map((reward, index) => (
-                                    <View key={index} style={styles.rewardItem}>
-                                        <Image style={styles.rewardImage} source={require('../../assets/icon.png')} />
-                                        <View style={styles.rewardTextContainer}>
-                                            <Text style={styles.rewardName}>{reward.name}</Text>
-                                            <Text>{reward.description}</Text>
-                                            <Text>
-                                                Valid thru {formatDate(reward.start_date)} - {formatDate(reward.end_date)}
-                                            </Text>
+                {/* Left Column - Orders Pending Section */}
+                <View style={styles.leftColumn}>
+                    {isLoading ? (
+                        <Text>Loading data...</Text>
+                    ) : (
+                        <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+                            {/* Promotions Section */}
+                            <Text style={styles.rewardsTitle}>Current Promotion/s</Text>
+                            <ScrollView style={styles.rewardsContainer} showsVerticalScrollIndicator={false}>
+                                {rewardsData && rewardsData.length > 0 ? (
+                                    rewardsData.map((reward, index) => (
+                                        <View key={index} style={styles.rewardItem}>
+                                            <Image style={styles.rewardImage} source={require('../../assets/icon.png')} />
+                                            <View style={styles.rewardTextContainer}>
+                                                <Text style={styles.rewardName}>{reward.name}</Text>
+                                                <Text>{reward.description}</Text>
+                                                <Text>
+                                                    Valid thru {formatDate(reward.start_date)} - {formatDate(reward.end_date)}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    ))
+                                ) : (
+                                    <Text>No rewards available.</Text>
+                                )}
+                            </ScrollView>
+                        </ScrollView>
+                    )}
+                </View>
+
+                {/* Right Column - Promotions and Featured Products Section */}
+                <View style={styles.rightColumn}>
+                    {isLoading ? (
+                        <Text>Loading data...</Text>
+                    ) : (
+                        <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+                            <Text style={styles.featuredProductsTitle}>Featured Products</Text>
+                            {/* Featured Products Section */}
+                            <ScrollView style={styles.featuredProductsContainer}>
+                                {products.map((product, index) => (
+                                    <View key={index} style={styles.cardContainer}>
+                                        <Image
+                                            style={styles.cardImage}
+                                            source={{ uri: `http://kapenapud.com/storage/${product.image}` }}
+                                        />
+                                        <View style={styles.cardTextContainer}>
+                                            <Text style={styles.cardName}>{product.name}</Text>
+                                            <Text style={styles.cardDescription}>{product.description}</Text>
                                         </View>
                                     </View>
-                                ))
-                            ) : (
-                                <Text>No rewards available.</Text>
-                            )}
+                                ))}
+                            </ScrollView>
                         </ScrollView>
-
-                        {/* Featured Products Section */}
-                        <Text style={styles.featuredProductsTitle}>Featured Products</Text>
-                        <ScrollView style={styles.featuredProductsContainer}>
-                            {products.map((product, index) => (
-                                <View key={index} style={styles.cardContainer}>
-                                    <Image
-                                        style={styles.cardImage}
-                                        source={{ uri: `http://kapenapud.com/storage/${product.image}` }}
-                                    />
-                                    <View style={styles.cardTextContainer}>
-                                        <Text style={styles.cardName}>{product.name}</Text>
-                                        <Text style={styles.cardDescription}>{product.description}</Text>
-                                    </View>
-                                </View>
-                            ))}
-                        </ScrollView>
-                    </ScrollView>
-                )}
+                    )}
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -140,71 +149,82 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        flexDirection: 'row', // Use flexDirection: 'row' to create columns
+        justifyContent: 'space-between', // Add space between columns
+        alignItems: 'stretch', // Stretch columns to full height
+    },
+    headerContainer: {
+        backgroundColor: 'white',
+    },
+    leftColumn: {
+        flex: 1, // Take 50% of the width
+    },
+    rightColumn: {
+        flex: 1, // Take 50% of the width
     },
     contentContainer: {
-        width: '90%',
-        alignSelf: 'center',
+        marginTop: 10,
+        flex: 1,
+        padding: 8,
     },
     rewardsContainer: {
-        marginBottom: height * 0.02,
-        padding:2
+        flex: 1,
+        marginBottom: 8,
+        padding: 2,
     },
     rewardsTitle: {
-        fontSize: width * 0.08,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: height * 0.02,
+        marginBottom: 8,
     },
     rewardItem: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
-        marginBottom: height * 0.02,
         backgroundColor: '#F2F2F2',
-        borderRadius: width * 0.02,
-        padding: width * 0.03,
+        borderRadius: 4,
+        padding: 8,
         width: '100%',
-        marginHorizontal: width * 0.02,
+        marginHorizontal: 4,
     },
     rewardImage: {
-        width: width * 0.2,
-        height: width * 0.2,
-        borderRadius: width * 0.1,
-        marginRight: width * 0.03,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        marginRight: 8,
     },
     rewardTextContainer: {
         flex: 1,
     },
     rewardName: {
-        fontSize: width * 0.05,
+        fontSize: 16,
         fontWeight: 'bold',
     },
     featuredProductsTitle: {
-        fontSize: width * 0.08,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: height * 0.02,
+        marginBottom: 8,
     },
     cardContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: height * 0.02,
+        marginBottom: 8,
         backgroundColor: '#FFFFFF',
-        borderRadius: width * 0.02,
-        padding: width * 0.03,
+        borderRadius: 4,
+        padding: 8,
         width: '100%',
-        marginHorizontal: width * 0.02,
+        marginHorizontal: 4,
     },
     cardImage: {
-        width: width * 0.2,
-        height: width * 0.2,
-        borderRadius: width * 0.025,
-        marginRight: width * 0.03,
+        width: 40,
+        height: 40,
+        borderRadius: 4,
+        marginRight: 8,
     },
     cardTextContainer: {
         flex: 1,
     },
     cardName: {
-        fontSize: width * 0.05,
+        fontSize: 16,
         fontWeight: 'bold',
     },
     cardDescription: {
@@ -213,40 +233,39 @@ const styles = StyleSheet.create({
     pendingOrdersContainer: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        marginTop: height * 0.02,
-        width: '100%',
         backgroundColor: '#F3DEBA',
-        borderRadius: width * 0.02,
+        borderRadius: 4,
     },
     pendingOrdersLeftColumn: {
+        flex: 1,
         alignItems: 'center',
         backgroundColor: '#675D50',
-        padding: width * 0.03,
+        padding: 8,
     },
     cartIcon: {
-        width: width * 0.15,
-        height: width * 0.15,
-        marginBottom: height * 0.01,
+        width: 24,
+        height: 24,
+        marginBottom: 4,
     },
     pendingOrdersTitle: {
-        fontSize: width * 0.08,
+        fontSize: 18,
         fontWeight: 'bold',
         color: 'white',
     },
     pendingOrdersRightColumn: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-
     },
     loadingStyle: {
-        width: width * 0.15,
-        height: width * 0.15,
+        width: 36,
+        height: 36,
         backgroundColor: '#FFF',
-        marginBottom: height * 0.01,
-        borderRadius: width * 0.02,
+        marginBottom: 8,
+        borderRadius: 4,
     },
     pendingOrdersCount: {
-        fontSize: width * 0.25,
+        fontSize: 40,
         fontWeight: 'bold',
         color: '#675D50',
     },

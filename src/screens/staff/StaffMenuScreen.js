@@ -81,7 +81,7 @@ const StaffMenuScreen = () => {
                                     />
                                     <Text style={styles.productName}>{product.name}</Text>
                                     <Text style={styles.productDescription}>{product.description}</Text>
-                                    <Text style={styles.productPrice}>Price: ${product.price}</Text>
+                                    <Text style={styles.productPrice}>Price: ₱{product.price}</Text>
                                     <TouchableOpacity
                                         style={styles.addToCartButton}
                                         onPress={() => handleAddToCart(product)}
@@ -130,6 +130,7 @@ const StaffMenuScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#FFF'
     },
     buttonContainer: {
         flexDirection: 'row',

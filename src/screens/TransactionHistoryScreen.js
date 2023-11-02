@@ -53,7 +53,7 @@ const TransactionHistoryScreen = ({ navigation }) => {
                                 {orderData.map(order => (
                                     <View key={order.id} style={styles.orderContainer}>
                                         <Text>Order Number: {order.order_number}</Text>
-                                        <Text>Total Price: {order.total_price}</Text>
+                                        <Text>Total Price: ₱{order.total_price}</Text>
                                         {/* Add more details as needed */}
                                     </View>
                                 ))}

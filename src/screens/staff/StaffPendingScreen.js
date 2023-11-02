@@ -9,7 +9,6 @@ import {
     FlatList,
     ScrollView,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     fetchAllOrders,
     fetchProducts,
@@ -73,7 +72,7 @@ const StaffPendingScreen = ({ navigation }) => {
                 <View>
                     <Text>{`Order Number: ${item.order_number}`}</Text>
                     <Text>{`Items: ${item.order_product.length}`}</Text>
-                    <Text>{`Total Price: $${item.total_price}`}</Text>
+                    <Text>{`Total Price: ₱${item.total_price}`}</Text>
                 </View>
                 <Icon name="clock-o" size={20} color="#000" style={styles.clockIcon} />
             </View>
@@ -84,7 +83,7 @@ const StaffPendingScreen = ({ navigation }) => {
         <View key={index} style={styles.orderItemContainer}>
             <Text>{`Name: ${findProductName(item.product_id)}`}</Text>
             <Text>{`Quantity: ${Math.round(item.quantity)}`}</Text>
-            <Text>{`Price: $${item.price}`}</Text>
+            <Text>{`Price: ₱${item.price}`}</Text>
         </View>
     );
 

@@ -35,7 +35,7 @@ const HomeScreen = () => {
 
         fetchData();
 
-        const intervalId = setInterval(fetchData, 5000);
+        const intervalId = setInterval(fetchData, 12000);
 
         // Clean up the interval when the component is unmounted
         return () => clearInterval(intervalId);
@@ -49,9 +49,9 @@ const HomeScreen = () => {
 
 
     return (
-        <SafeAreaView style={styles.safeAreaViewContainer}>
+        <SafeAreaView style={styles.container}>
 
-        <View style={styles.container}>
+        <View style={styles.safeAreaViewContainer}>
             {/* Rewards and Featured Products Section */}
             {isLoading ? (
                 <Text>Loading data...</Text>

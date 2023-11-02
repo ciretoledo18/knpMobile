@@ -13,8 +13,10 @@ import PendingScreen from "./src/screens/PendingScreen";
 import {CartProvider} from "./src/utils/CartContext";
 import HomeScreen from "./src/screens/HomeScreen";
 import StaffPendingScreen from "./src/screens/staff/StaffPendingScreen";
-import StaffCartScreen from "./src/screens/staff/StaffCartScreen";
 import StaffProfileScreen from "./src/screens/staff/StaffProfileScreen";
+import StaffPosScreen from "./src/screens/staff/StaffPosScreen";
+import KioskNavigator from "./src/components/kiosknavigator";
+import KioskOrderScreen from "./src/screens/staff/KioskOrderScreen";
 
 const Stack = createStackNavigator();
 
@@ -37,12 +39,14 @@ const App = () => {
                 <Stack.Screen name="PendingScreen" component={PendingScreen} options={{ headerShown: false }} />
 
                 {/*Staff*/}
-                <Stack.Screen name="StaffHome" component={StaffHomeScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="StaffMenu" component={StaffHomeScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="StaffNav" component={StaffNavigator} options={{ headerShown: false }} />
+                <Stack.Screen name="StaffHome" component={StaffHomeScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="StaffPos" component={StaffPosScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="StaffPending" component={StaffPendingScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="StaffCart" component={StaffCartScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="StaffProfile" component={StaffProfileScreen} options={{ headerShown: false }} />
+
+                {/*Kiosk*/}
+                <Stack.Screen name="KioskNav" component={KioskNavigator} options={{ headerShown: false }} />
 
             </Stack.Navigator>
             </CartProvider>

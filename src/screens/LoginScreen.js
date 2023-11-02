@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, Image, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from '@react-navigation/native';
-import { loginUser } from '../utils/api';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import {loginUser} from '../utils/api';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
     const [email, setEmail] = useState('');
@@ -17,9 +17,11 @@ const LoginScreen = () => {
             const userData = JSON.parse(user);
 
             if (userData.role_id === 1 || userData.role_id === 2) {
-                navigation.replace('StaffNav', { token });
+                navigation.replace('StaffNav', {token});
+            } else if (userData.role_id === 4) {
+                navigation.replace('KioskNav', {token});
             } else {
-                navigation.replace('Home', { token });
+                navigation.replace('Home', {token});
             }
         } catch (error) {
             console.error('Login failed:', error.message);
@@ -34,7 +36,7 @@ const LoginScreen = () => {
         <SafeAreaView style={styles.bgContainer}>
             <View style={styles.centeredView}>
                 <TouchableOpacity style={styles.logoContainer}>
-                    <Image style={styles.logo} source={require('../assets/icon.png')} />
+                    <Image style={styles.logo} source={require('../assets/icon.png')}/>
                     <Text style={styles.logoText}>kape na pud</Text>
                 </TouchableOpacity>
                 <View style={styles.formContainer}>
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.2,
         elevation: 2,
     },

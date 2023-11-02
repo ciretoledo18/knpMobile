@@ -26,7 +26,7 @@ const CartHeader = () => {
     );
 };
 
-const StaffCartScreen = () => {
+const KioskCartScreen = () => {
     const navigation = useNavigation();
 
     const { state, dispatch } = useCart();
@@ -106,7 +106,7 @@ const StaffCartScreen = () => {
         // Close the order number modal
         setOrderNumberModalVisible(false);
         // Navigate back to KioskHome
-        navigation.navigate('StaffHome');
+        navigation.navigate('KioskHome');
     };
 
     return (
@@ -353,4 +353,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default StaffCartScreen;
+export default KioskCartScreen;

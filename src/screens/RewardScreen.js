@@ -28,7 +28,7 @@ const RewardScreen = () => {
             }
         };
         fetchData();
-        const intervalId = setInterval(fetchData, 5000);
+        const intervalId = setInterval(fetchData, 30000);
 
         // Clean up the interval when the component is unmounted
         return () => clearInterval(intervalId);

@@ -4,16 +4,15 @@ import {
     Text,
     StyleSheet,
     FlatList,
-    SafeAreaView,
     TouchableOpacity,
     Modal,
-    Alert,
 } from 'react-native';
 import { useCart } from '../utils/CartContext';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
-import { playSound } from "../utils/CustomerSoundUtility";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {fetchPayMethod} from "../utils/api";
 
 // Header component for the cart table
 const CartHeader = () => {
@@ -33,7 +32,10 @@ const CartScreen = () => {
     const { state, dispatch } = useCart();
     const { cart } = state;
     const [isCheckoutModalVisible, setCheckoutModalVisible] = useState(false);
+    const [isOrderNumberModalVisible, setOrderNumberModalVisible] = useState(false);
     const [isClearCartModalVisible, setClearCartModalVisible] = useState(false);
+    const [orderNumber, setOrderNumber] = useState(null);
+    const [payMethod, setPayMethod] = useState(null);
 
     // Calculate the total by iterating through the cart items
     const total = cart.reduce((acc, item) => acc + item.quantity * item.price, 0);
@@ -42,10 +44,14 @@ const CartScreen = () => {
         try {
             // Retrieve the user ID from AsyncStorage
             const userId = await AsyncStorage.getItem('userId');
+            const payMethod = await fetchPayMethod();
+            const orderNumber = Math.floor(Math.random() * 90000) + 10000;
+
             // Create the checkout data
             const checkoutData = {
-                userId: userId, // Replace with the actual user ID
-                paymentId: 1, // Replace with the actual payment ID
+                orderNumber,
+                userId,
+                paymentId: 1,
                 totalPrice: total,
                 cartItems: cart.map((item) => ({
                     productId: item.id,
@@ -63,10 +69,14 @@ const CartScreen = () => {
             // Dispatch the 'CONFIRM_ORDER' action
             dispatch({ type: 'CONFIRM_ORDER' });
 
-            // Close the modal
+            // Set the order number for displaying in the modal
+            setOrderNumber(orderNumber);
+
+            // Show the order number modal
+            setOrderNumberModalVisible(true);
+
+            // Close the checkout modal
             setCheckoutModalVisible(false);
-            playSound();
-            navigation.navigate('Dashboard'); // This triggers the re-render of the HomeScreen
 
             // Handle the response, for example, display a success message
         } catch (error) {
@@ -82,19 +92,21 @@ const CartScreen = () => {
         setClearCartModalVisible(false);
     };
 
-    const handleCheckoutPress = async () => {
-        // Check if the cart is empty
+    const handleCheckoutPress = () => {
         if (cart.length === 0) {
-            // Show an alert if the cart is empty
-            Alert.alert(
-                'Empty Cart',
-                'Your cart is empty. Add some items before proceeding to checkout.'
-            );
-            return;
+            // If the cart is empty, show an alert
+            alert('Your cart is empty. Add items before checking out.');
+        } else {
+            // If the cart is not empty, show the checkout modal
+            setCheckoutModalVisible(true);
         }
+    };
 
-        // Continue with the checkout process
-        setCheckoutModalVisible(true);
+    const handleOrderNumberModalClose = () => {
+        // Close the order number modal
+        setOrderNumberModalVisible(false);
+        // Navigate back to KioskHome
+        navigation.navigate('Dashboard');
     };
 
     return (
@@ -110,9 +122,9 @@ const CartScreen = () => {
                             <View style={styles.cartItem}>
                                 <Text style={styles.cartItemText}>{item.name}</Text>
                                 <Text style={styles.cartItemText}>{item.quantity}</Text>
-                                <Text style={styles.cartItemText}>${item.price}</Text>
+                                <Text style={styles.cartItemText}>₱{item.price}</Text>
                                 <Text style={styles.cartItemText}>
-                                    ${item.quantity * item.price}
+                                    ₱{item.quantity * item.price}
                                 </Text>
                             </View>
                         )}
@@ -120,7 +132,7 @@ const CartScreen = () => {
                 ) : (
                     <Text>Your cart is empty</Text>
                 )}
-                <Text style={styles.totalText}>Total: ${total}</Text>
+                <Text style={styles.totalText}>Total: ₱{total}</Text>
                 <TouchableOpacity
                     style={styles.clearCartButton}
                     onPress={() => setClearCartModalVisible(true)}
@@ -142,20 +154,41 @@ const CartScreen = () => {
                     onRequestClose={() => setCheckoutModalVisible(false)}
                 >
                     <View style={styles.modalContainer}>
-                        <Text style={styles.modalTitle}>
-                            Confirm order?
-                        </Text>
+                        <Text style={styles.modalTitle}>Confirm order?</Text>
                         <TouchableOpacity
                             style={styles.modalButton}
-                            onPress={handleConfirmOrder}
+                            onPress={() => {
+                                handleConfirmOrder();
+                            }}
                         >
                             <Text style={styles.modalButtonText}>Confirm</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.declineButton}
-                            onPress={() => setCheckoutModalVisible(false)}
+                            onPress={() => {
+                                setCheckoutModalVisible(false);
+                            }}
                         >
                             <Text style={styles.declineButtonText}>Decline</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+
+                {/* Order Number Modal */}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={isOrderNumberModalVisible}
+                    onRequestClose={handleOrderNumberModalClose}
+                >
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalTitle}>Order Confirmed!</Text>
+                        <Text style={styles.modalText}>Order Number: {orderNumber}</Text>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={handleOrderNumberModalClose}
+                        >
+                            <Text style={styles.modalButtonText}>Close</Text>
                         </TouchableOpacity>
                     </View>
                 </Modal>
@@ -168,18 +201,20 @@ const CartScreen = () => {
                     onRequestClose={() => setClearCartModalVisible(false)}
                 >
                     <View style={styles.modalContainer}>
-                        <Text style={styles.modalTitle}>
-                            Are you sure?
-                        </Text>
+                        <Text style={styles.modalTitle}>Are you sure?</Text>
                         <TouchableOpacity
                             style={styles.modalButton}
-                            onPress={handleClearCartConfirmed}
+                            onPress={() => {
+                                handleClearCartConfirmed();
+                            }}
                         >
                             <Text style={styles.modalButtonText}>Confirm</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.declineButton}
-                            onPress={() => setClearCartModalVisible(false)}
+                            onPress={() => {
+                                setClearCartModalVisible(false);
+                            }}
                         >
                             <Text style={styles.declineButtonText}>Cancel</Text>
                         </TouchableOpacity>
@@ -233,19 +268,40 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 16,
     },
+    confirmButton: {
+        backgroundColor: 'green',
+        padding: 12,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    confirmButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     modalContainer: {
-        flex: 1,
+        borderWidth: 3,
+        borderColor: '#675D50',
+        width: '75%',
+        height: '25%',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
-        margin: 32,
+        marginTop: '40%',
+        margin: '15%',
         borderRadius: 8,
+        backgroundColor: '#F3DEBA'
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 25,
         marginBottom: 16,
         fontWeight: 'bold',
 
+    },
+    modalText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 16,
     },
     modalButton: {
         backgroundColor: '#675D50',
@@ -295,7 +351,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-
 });
 
 export default CartScreen;
