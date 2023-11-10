@@ -10,7 +10,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchAllOrders, fetchProducts, fetchRewards, fetchUserOrders } from '../../utils/api';
+import { fetchAllOrders, fetchProducts, fetchRewards } from '../../utils/api';
 import { playSound } from '../../utils/StaffSoundUtility';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -29,7 +29,6 @@ const StaffHomeScreen = () => {
             try {
                 const allRewards = await fetchRewards();
                 const allProducts = await fetchProducts();
-                const userId = parseInt(await AsyncStorage.getItem('userId'), 10);
                 const featuredProducts = allProducts.filter((product) => product.is_featured === 1);
                 const unavailableProducts = allProducts.filter((product) => product.availability === "No");
 
