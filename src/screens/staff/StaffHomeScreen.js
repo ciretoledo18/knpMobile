@@ -7,7 +7,6 @@ import {
     ScrollView,
     TouchableOpacity,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fetchAllOrders, fetchProducts, fetchRewards } from '../../utils/api';
