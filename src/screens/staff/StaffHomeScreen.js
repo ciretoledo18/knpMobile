@@ -19,6 +19,8 @@ const StaffHomeScreen = () => {
     const [rewardsData, setRewardsData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [products, setProducts] = useState([]);
+    const [unavailable, setUnavailable] = useState([]);
+
     const navigation = useNavigation();
     const [prevPendingOrdersCount, setPrevPendingOrdersCount] = useState(0);
 
@@ -29,6 +31,8 @@ const StaffHomeScreen = () => {
                 const allProducts = await fetchProducts();
                 const userId = parseInt(await AsyncStorage.getItem('userId'), 10);
                 const featuredProducts = allProducts.filter((product) => product.is_featured === 1);
+                const unavailableProducts = allProducts.filter((product) => product.availability === "No");
+
                 const allOrders = await fetchAllOrders();
 
                 const pendingOrdersCount = allOrders.filter((order) => order.status === 0).length;
@@ -36,10 +40,13 @@ const StaffHomeScreen = () => {
                     playSound();
                 }
 
+                // console.log(unavailableProducts)
+
                 setPrevPendingOrdersCount(pendingOrdersCount);
 
                 setOrderData(allOrders);
                 setProducts(featuredProducts);
+                setUnavailable(unavailableProducts)
                 setRewardsData(allRewards);
             } catch (error) {
                 console.error('Error fetching data:', error.message);
@@ -102,13 +109,30 @@ const StaffHomeScreen = () => {
                                                     Valid thru {formatDate(reward.start_date)} - {formatDate(reward.end_date)}
                                                 </Text>
                                             </View>
+
                                         </View>
                                     ))
                                 ) : (
                                     <Text>No rewards available.</Text>
                                 )}
                             </ScrollView>
+                            <Text style={styles.featuredProductsTitle}>Unavailable Product/s</Text>
+                            <ScrollView style={styles.featuredProductsContainer}>
+                                {unavailable.map((product, index) => (
+                                    <View key={index} style={styles.cardContainer}>
+                                        <Image
+                                            style={styles.cardImage}
+                                            source={{ uri: `http://kapenapud.com/storage/${product.image}` }}
+                                        />
+                                        <View style={styles.cardTextContainer}>
+                                            <Text style={styles.cardName}>{product.name}</Text>
+                                            <Text style={styles.cardDescription}>{product.description}</Text>
+                                        </View>
+                                    </View>
+                                ))}
+                            </ScrollView>
                         </ScrollView>
+
                     )}
                 </View>
 

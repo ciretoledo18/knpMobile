@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "KNP",
-    "slug": "kape-na-pud",
+    "slug": "knpmobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,7 +28,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "ba20ea2a-edfa-41f4-94b7-7b8dd60e8694"
+        "projectId": "92f06741-a90d-4fd7-8c8f-de1693395999"
       }
     },
     "owner": "ciretoledo18"
