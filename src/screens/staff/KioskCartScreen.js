@@ -31,59 +31,11 @@ const KioskCartScreen = () => {
 
     const { state, dispatch } = useCart();
     const { cart } = state;
-    const [isCheckoutModalVisible, setCheckoutModalVisible] = useState(false);
-    const [isOrderNumberModalVisible, setOrderNumberModalVisible] = useState(false);
     const [isClearCartModalVisible, setClearCartModalVisible] = useState(false);
-    const [orderNumber, setOrderNumber] = useState(null);
-    const [payMethod, setPayMethod] = useState(null);
+
 
     // Calculate the total by iterating through the cart items
     const total = cart.reduce((acc, item) => acc + item.quantity * item.price, 0);
-
-    const handleConfirmOrder = async () => {
-        try {
-            // Retrieve the user ID from AsyncStorage
-            const userId = await AsyncStorage.getItem('userId');
-            const payMethod = await fetchPayMethod();
-            const orderNumber = Math.floor(Math.random() * 90000) + 10000;
-
-            // Create the checkout data
-            const checkoutData = {
-                orderNumber,
-                userId,
-                paymentId: 1,
-                totalPrice: total,
-                cartItems: cart.map((item) => ({
-                    productId: item.id,
-                    price: item.price,
-                    quantity: item.quantity,
-                })),
-            };
-
-            // Make a POST request to kapenapud.com/api/order/checkout
-            const response = await axios.post(
-                'https://kapenapud.com/api/order/checkout',
-                checkoutData
-            );
-
-            // Dispatch the 'CONFIRM_ORDER' action
-            dispatch({ type: 'CONFIRM_ORDER' });
-
-            // Set the order number for displaying in the modal
-            setOrderNumber(orderNumber);
-
-            // Show the order number modal
-            setOrderNumberModalVisible(true);
-
-            // Close the checkout modal
-            setCheckoutModalVisible(false);
-
-            // Handle the response, for example, display a success message
-        } catch (error) {
-            // Handle the error, for example, display an error message
-            console.error('Error confirming order:', error.message);
-        }
-    };
 
     const handleClearCartConfirmed = () => {
         // Clear the cart
@@ -98,16 +50,11 @@ const KioskCartScreen = () => {
             alert('Your cart is empty. Add items before checking out.');
         } else {
             // If the cart is not empty, show the checkout modal
-            setCheckoutModalVisible(true);
+            navigation.navigate('KioskPayment');
+
         }
     };
 
-    const handleOrderNumberModalClose = () => {
-        // Close the order number modal
-        setOrderNumberModalVisible(false);
-        // Navigate back to KioskHome
-        navigation.navigate('KioskHome');
-    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -145,53 +92,6 @@ const KioskCartScreen = () => {
                 >
                     <Text style={styles.checkoutButtonText}>Checkout</Text>
                 </TouchableOpacity>
-
-                {/* Checkout Modal */}
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={isCheckoutModalVisible}
-                    onRequestClose={() => setCheckoutModalVisible(false)}
-                >
-                    <View style={styles.modalContainer}>
-                        <Text style={styles.modalTitle}>Confirm order?</Text>
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={() => {
-                                handleConfirmOrder();
-                            }}
-                        >
-                            <Text style={styles.modalButtonText}>Confirm</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.declineButton}
-                            onPress={() => {
-                                setCheckoutModalVisible(false);
-                            }}
-                        >
-                            <Text style={styles.declineButtonText}>Decline</Text>
-                        </TouchableOpacity>
-                    </View>
-                </Modal>
-
-                {/* Order Number Modal */}
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={isOrderNumberModalVisible}
-                    onRequestClose={handleOrderNumberModalClose}
-                >
-                    <View style={styles.modalContainer}>
-                        <Text style={styles.modalTitle}>Order Confirmed!</Text>
-                        <Text style={styles.modalText}>Order Number: {orderNumber}</Text>
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={handleOrderNumberModalClose}
-                        >
-                            <Text style={styles.modalButtonText}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </Modal>
 
                 {/* Clear Cart Modal */}
                 <Modal

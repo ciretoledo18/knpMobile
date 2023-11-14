@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import StaffHomeScreen from "../screens/staff/StaffHomeScreen";
 import StaffProfileScreen from "../screens/staff/StaffProfileScreen";
 import StaffPosScreen from "../screens/staff/StaffPosScreen";
+import StaffStockScreen from "../screens/staff/StaffStockScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -30,6 +31,14 @@ const StaffNavigator = () => {
                     options={{
                         tabBarIcon: ({ color }) => (
                             <Icon name="cart" color={color} size={26} />
+                        ),
+                    }}/>
+                <Tab.Screen
+                    name="Stocks"
+                    component={StaffStockScreen}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <Icon name="finance" color={color} size={26} />
                         ),
                     }}/>
                 <Tab.Screen

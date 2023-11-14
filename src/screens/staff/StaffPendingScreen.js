@@ -10,7 +10,7 @@ import {
     ScrollView,
 } from 'react-native';
 import {
-    fetchAllOrders,
+    fetchAllOrders, fetchPayMethod,
     fetchProducts,
     updateOrderStatus,
 } from '../../utils/api';
@@ -21,13 +21,16 @@ const StaffPendingScreen = ({ navigation }) => {
     const [orderData, setOrderData] = useState(null);
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [payMethod, setPayMethod] = useState(null);
 
     const fetchData = async () => {
         try {
             const allOrders = await fetchAllOrders();
             const products = await fetchProducts();
+            const payments = await fetchPayMethod();
             const pendingOrders = allOrders.filter(order => order.status === 0);
 
+            setPayMethod(payments);
             setOrderData(pendingOrders);
             setAllProducts(products);
         } catch (error) {
@@ -51,7 +54,10 @@ const StaffPendingScreen = ({ navigation }) => {
         const product = allProducts.find((product) => product.id === productId);
         return product ? product.name : 'Product not found';
     };
-
+    const findPaymentName = (paymentId) => {
+        const payment = payMethod.find((payment) => payment.id === paymentId);
+        return payment ? payment.name : 'Payment not found';
+    };
     const handleCompleteOrder = async () => {
         try {
             if (selectedOrder) {
@@ -71,6 +77,7 @@ const StaffPendingScreen = ({ navigation }) => {
             <View style={styles.orderInfo}>
                 <View>
                     <Text>{`Order Number: ${item.order_number}`}</Text>
+                    <Text>{`Payment Method: ${findPaymentName(item.payment_id)}`}</Text>
                     <Text>{`Items: ${item.order_product.length}`}</Text>
                     <Text>{`Total Price: ₱${item.total_price}`}</Text>
                 </View>

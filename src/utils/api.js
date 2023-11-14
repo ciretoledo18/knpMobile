@@ -154,6 +154,16 @@ export const fetchAllOrders = async (userId) => {
         throw error;
     }
 };
+export const fetchStocks = async (userId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/stocks`);
+        return response.data.data;
+    } catch (error) {
+        // Handle error (e.g., display an error message to the user)
+        console.error('Error fetching all orders:', error.message);
+        throw error;
+    }
+};
 export const updateOrderStatus = async (orderId) => {
     try {
         const response = await fetch(`${BASE_URL}/orders/${orderId}`, {
@@ -178,4 +188,5 @@ export const updateOrderStatus = async (orderId) => {
     } catch (error) {
         throw new Error(`Error updating order status: ${error.message}`);
     }
+
 };

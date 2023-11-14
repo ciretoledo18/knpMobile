@@ -80,10 +80,8 @@ const KioskHomeScreen = () => {
                         {/* Featured Products Section */}
                         <Text style={styles.featuredProductsTitle}>Featured Products</Text>
                         <ScrollView
-                            style={styles.featuredProductsContainer}
                             horizontal
                             showsHorizontalScrollIndicator={false}
-                            pagingEnabled={false} // Set pagingEnabled to false
                         >
                             {products.map((product, index) => (
                                 <View key={index} style={styles.cardContainer}>
@@ -112,9 +110,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#ABC4AA', // Adjust to your background color
+
     },
     contentContainer: {
         width: '90%',
+        marginTop: 30
+
     },
     rewardsContainer: {
         marginBottom: 20,
@@ -155,14 +156,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     cardContainer: {
-        flexDirection: 'column',
         alignItems: 'center',
-        marginBottom: 20,
         backgroundColor: '#FFFFFF',
         borderRadius: 10,
         padding: 10,
         width: '25%',
-        marginLeft: 20
+        marginLeft: 20,
+
     },
     cardImage: {
         width: '100%',
@@ -170,11 +170,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 15,
     },
-    cardTextContainer: {
-        flex: 1,
-    },
     cardName: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
     },
     cardDescription: {

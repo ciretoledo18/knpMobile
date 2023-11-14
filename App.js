@@ -16,7 +16,8 @@ import StaffPendingScreen from "./src/screens/staff/StaffPendingScreen";
 import StaffProfileScreen from "./src/screens/staff/StaffProfileScreen";
 import StaffPosScreen from "./src/screens/staff/StaffPosScreen";
 import KioskNavigator from "./src/components/kiosknavigator";
-import KioskOrderScreen from "./src/screens/staff/KioskOrderScreen";
+import KioskPaymentScreen from "./src/screens/KioskPaymentScreen";
+import StaffStockScreen from "./src/screens/staff/StaffStockScreen";
 
 const Stack = createStackNavigator();
 
@@ -44,9 +45,12 @@ const App = () => {
                 <Stack.Screen name="StaffPos" component={StaffPosScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="StaffPending" component={StaffPendingScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="StaffProfile" component={StaffProfileScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="StaffStock" component={StaffStockScreen} options={{ headerShown: false }} />
 
                 {/*Kiosk*/}
                 <Stack.Screen name="KioskNav" component={KioskNavigator} options={{ headerShown: false }} />
+                <Stack.Screen name="KioskPayment" component={KioskPaymentScreen} options={{ headerShown: false }} />
+
 
             </Stack.Navigator>
             </CartProvider>
