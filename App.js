@@ -1,5 +1,5 @@
 // App.js
-import React from 'react';
+import React, {useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './src/screens/LoginScreen';
@@ -16,7 +16,8 @@ import StaffPendingScreen from "./src/screens/staff/StaffPendingScreen";
 import StaffProfileScreen from "./src/screens/staff/StaffProfileScreen";
 import StaffPosScreen from "./src/screens/staff/StaffPosScreen";
 import KioskNavigator from "./src/components/kiosknavigator";
-import KioskPaymentScreen from "./src/screens/KioskPaymentScreen";
+import KioskPaymentScreen from "./src/screens/staff/KioskPaymentScreen";
+import QRScanner from "./src/utils/QRScanner";
 
 const Stack = createStackNavigator();
 
@@ -48,6 +49,7 @@ const App = () => {
                 {/*Kiosk*/}
                 <Stack.Screen name="KioskNav" component={KioskNavigator} options={{ headerShown: false }} />
                 <Stack.Screen name="KioskPayment" component={KioskPaymentScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="QRScanner" component={QRScanner} options={{ headerShown: false }} />
 
 
             </Stack.Navigator>

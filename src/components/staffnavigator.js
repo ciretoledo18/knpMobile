@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import StaffHomeScreen from "../screens/staff/StaffHomeScreen";
 import StaffProfileScreen from "../screens/staff/StaffProfileScreen";
 import StaffPosScreen from "../screens/staff/StaffPosScreen";
+import QRScanner from "../utils/QRScanner";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -32,6 +33,7 @@ const StaffNavigator = () => {
                             <Icon name="cart" color={color} size={26} />
                         ),
                     }}/>
+
                 <Tab.Screen
                     name="Profile"
                     component={StaffProfileScreen}

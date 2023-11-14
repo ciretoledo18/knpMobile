@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Image, Modal} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { fetchPayMethod } from '../utils/api';
+import { fetchPayMethod } from '../../utils/api';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import {useCart} from "../utils/CartContext";
+import {useCart} from "../../utils/CartContext";
 
 const KioskPaymentScreen = () => {
     const navigation = useNavigation();
@@ -131,7 +131,7 @@ const KioskPaymentScreen = () => {
                             <>
                                 <View style={styles.imageContainer}>
                                     <Image
-                                        source={require('../assets/gcash.jpg')}
+                                        source={require('../../assets/gcash.jpg')}
                                         style={styles.gCash} // Adjust the size as needed
                                     />
                                     <Text style={styles.noteText}>Please scan the QR code in the GCash app, enter your order number in the message box after checkout and pay the exact amount to complete your order.</Text>

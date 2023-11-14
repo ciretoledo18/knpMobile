@@ -10,6 +10,7 @@ const RewardScreen = () => {
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
     const [customerData, setCustomerData] = useState(null);
+    const [userInfo, setUserInfo] = useState(null);
     const [stamps, setStamps] = useState(0); // Assuming stamps are used for rewards
 
     useEffect(() => {
@@ -21,6 +22,8 @@ const RewardScreen = () => {
 
                 const totalStamps = currentCustomer.rewards;
                 setStamps(totalStamps);
+                setUserInfo(userId);
+                console.log(userId);
             } catch (error) {
                 console.error('Error fetching data:', error.message);
             } finally {
@@ -34,8 +37,7 @@ const RewardScreen = () => {
         return () => clearInterval(intervalId);
     }, [navigation]);
 
-    const qrCodeData = 'https://kapenapud.com'; // URL to link
-
+    const qrCodeData = userInfo ? userInfo.toString() : ''; // URL to link
     const handleTransactionHistoryPress = () => {
         navigation.navigate('Orders');
     };

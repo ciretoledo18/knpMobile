@@ -66,6 +66,10 @@ const StaffHomeScreen = () => {
         const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
         return formattedDate;
     };
+    const handleCameraPress = () => {
+        // Navigate to the QRScanner screen
+        navigation.navigate('QRScanner');
+    };
 
     return (
         <SafeAreaView style={styles.safeAreaViewContainer} >
@@ -160,6 +164,10 @@ const StaffHomeScreen = () => {
                     )}
                 </View>
             </View>
+            {/* Camera Button */}
+            <TouchableOpacity style={styles.cameraButton} onPress={handleCameraPress}>
+                <Icon name="camera" size={36} color="white" />
+            </TouchableOpacity>
         </SafeAreaView>
     );
 };
@@ -290,6 +298,14 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold',
         color: '#675D50',
+    },
+    cameraButton: {
+        position: 'absolute',
+        bottom: 16,
+        right: 16,
+        backgroundColor: '#675D50',
+        borderRadius: 50,
+        padding: 12,
     },
 });
 
