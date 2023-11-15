@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Image, Modal} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { fetchPayMethod } from '../../utils/api';
+import { fetchPayMethod } from '../utils/api';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import {useCart} from "../../utils/CartContext";
+import {useCart} from "../utils/CartContext";
 
-const KioskPaymentScreen = () => {
+const PaymentScreen = () => {
     const navigation = useNavigation();
     const [payMethods, setPayMethods] = useState([]);
     const [selectedMethod, setSelectedMethod] = useState(null);
@@ -47,7 +47,7 @@ const KioskPaymentScreen = () => {
         // Close the order number modal
         setOrderNumberModalVisible(false);
         // Navigate back to KioskHome
-        navigation.navigate('KioskHome');
+        navigation.navigate('Home');
     };
     const total = cart.reduce((acc, item) => acc + item.quantity * item.price, 0);
     const handleConfirmOrder = async () => {
@@ -131,10 +131,10 @@ const KioskPaymentScreen = () => {
                             <>
                                 <View style={styles.imageContainer}>
                                     <Image
-                                        source={require('../../assets/gcash.jpg')}
+                                        source={require('../assets/gcash.jpg')}
                                         style={styles.gCash} // Adjust the size as needed
                                     />
-                                    <Text style={styles.noteText}>Please scan the QR code in the GCash app, enter your order number in the message box after checkout and pay the exact amount to complete your order.</Text>
+                                    <Text style={styles.noteText}>Please screenshot the QR code and upload the QR into GCash app, enter your order number in the message box after checkout and pay the exact amount to complete your order.</Text>
 
                                 </View>
                             </>
@@ -201,12 +201,15 @@ const KioskPaymentScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'row',
+        flexDirection: 'column', // Change from 'row' to 'column'
     },
     leftColumn: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 10,
+        marginBottom: 10, // Add margin at the bottom
     },
     rightColumn: {
         flex: 1,
@@ -227,11 +230,11 @@ const styles = StyleSheet.create({
         top: 16,
         left: 16,
         backgroundColor: '#675D50',
-        padding: 16,
+        padding: 10,
         borderRadius: 8,
         justifyContent: 'center',
         zIndex: 1,
-        marginTop: 5,
+        marginTop: 30,
     },
     paymentMethodButton: {
         width: '80%',
@@ -256,9 +259,9 @@ const styles = StyleSheet.create({
     },
     noteText: {
         marginTop: 20,
-        paddingRight: 30,
+        padding: 10,
         textAlign: 'center',
-        fontSize: 26,
+        fontSize: 16,
         fontWeight: 'bold',
     },
     gCash: {
@@ -289,12 +292,12 @@ const styles = StyleSheet.create({
     modalContainer: {
         borderWidth: 3,
         borderColor: '#675D50',
-        width: '30%',
-        height: '30%',
+        width: '75%',
+        height: '25%',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '20%',
-        marginLeft: '35%',
+        marginTop: '40%',
+        margin: '15%',
         borderRadius: 8,
         backgroundColor: '#F3DEBA'
     },
@@ -336,4 +339,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default KioskPaymentScreen;
+export default PaymentScreen;

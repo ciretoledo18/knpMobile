@@ -12,6 +12,7 @@ const RewardScreen = () => {
     const [customerData, setCustomerData] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
     const [stamps, setStamps] = useState(0); // Assuming stamps are used for rewards
+    const [qrCodeData, setQrCodeData] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,7 +24,7 @@ const RewardScreen = () => {
                 const totalStamps = currentCustomer.rewards;
                 setStamps(totalStamps);
                 setUserInfo(userId);
-                console.log(userId);
+                setQrCodeData(userId); // Set qrCodeData here
             } catch (error) {
                 console.error('Error fetching data:', error.message);
             } finally {
@@ -37,7 +38,6 @@ const RewardScreen = () => {
         return () => clearInterval(intervalId);
     }, [navigation]);
 
-    const qrCodeData = userInfo ? userInfo.toString() : ''; // URL to link
     const handleTransactionHistoryPress = () => {
         navigation.navigate('Orders');
     };
@@ -63,12 +63,14 @@ const RewardScreen = () => {
 
             {/* QR Code with Logo */}
             <View style={styles.qrCodeContainer}>
-                <QRCode
-                    value={qrCodeData}
-                    size={200}
-                    logoSize={50}
-                    logoBackgroundColor="transparent"
-                />
+                {qrCodeData && (
+                    <QRCode
+                        value={qrCodeData.toString()}
+                        size={200}
+                        logoSize={50}
+                        logoBackgroundColor="transparent"
+                    />
+                )}
             </View>
 
             {/* Button to navigate to TransactionHistoryScreen */}

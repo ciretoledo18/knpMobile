@@ -98,7 +98,9 @@ const CartScreen = () => {
             alert('Your cart is empty. Add items before checking out.');
         } else {
             // If the cart is not empty, show the checkout modal
-            setCheckoutModalVisible(true);
+            // setCheckoutModalVisible(true)
+            navigation.navigate('PaymentScreen');
+
         }
     };
 

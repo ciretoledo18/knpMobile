@@ -18,7 +18,6 @@ export const loginUser = async (email, password) => {
         // Store the token and user ID in AsyncStorage
         await AsyncStorage.setItem('authToken', token);
         await AsyncStorage.setItem('userData',JSON.stringify(user));
-
         await AsyncStorage.setItem('userId', user.id.toString());
 
 
