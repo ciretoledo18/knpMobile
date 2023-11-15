@@ -1,13 +1,22 @@
-import React, {useState} from 'react';
-import {View, Text, Image, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useNavigation} from '@react-navigation/native';
-import {loginUser} from '../utils/api';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Alert, // Import Alert from react-native
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { loginUser } from '../utils/api';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null); // Add state for error message
     const navigation = useNavigation();
 
     const handleLogin = async () => {
@@ -17,14 +26,16 @@ const LoginScreen = () => {
             const userData = JSON.parse(user);
 
             if (userData.role_id === 1 || userData.role_id === 2) {
-                navigation.replace('StaffNav', {token});
+                navigation.replace('StaffNav', { token });
             } else if (userData.role_id === 4) {
-                navigation.replace('KioskNav', {token});
+                navigation.replace('KioskNav', { token });
             } else {
-                navigation.replace('Home', {token});
+                navigation.replace('Home', { token });
             }
         } catch (error) {
             console.error('Login failed:', error.message);
+            setError('Invalid email or password. Please try again.'); // Set error message
+            Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
         }
     };
 
@@ -36,12 +47,14 @@ const LoginScreen = () => {
         <SafeAreaView style={styles.bgContainer}>
             <View style={styles.centeredView}>
                 <TouchableOpacity style={styles.logoContainer}>
-                    <Image style={styles.logo} source={require('../assets/icon.png')}/>
+                    <Image style={styles.logo} source={require('../assets/icon.png')} />
                     <Text style={styles.logoText}>kape na pud</Text>
                 </TouchableOpacity>
                 <View style={styles.formContainer}>
                     <View style={styles.formContent}>
                         <Text style={styles.title}>Sign in to your account</Text>
+                        {/* Display error message */}
+                        {error && <Text style={styles.errorText}>{error}</Text>}
                         <View style={styles.inputContainer}>
                             <Text style={styles.label}>Your email</Text>
                             <TextInput
@@ -66,7 +79,9 @@ const LoginScreen = () => {
                         </TouchableOpacity>
                         <Text style={styles.signUpText}>
                             Don’t have an account yet?{' '}
-                            <Text style={styles.signUpLink} onPress={handleRegister}>Sign up</Text>
+                            <Text style={styles.signUpLink} onPress={handleRegister}>
+                                Sign up
+                            </Text>
                         </Text>
                     </View>
                 </View>
@@ -106,7 +121,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: {width: 0, height: 2},
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         elevation: 2,
     },
@@ -155,6 +170,10 @@ const styles = StyleSheet.create({
     signUpLink: {
         color: '#007bff',
         fontWeight: 'bold',
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 16,
     },
 });
 
